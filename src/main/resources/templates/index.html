@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Inicio')}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<!-- ======== HERO BANNER CARRUSEL ======== -->
+<section class="hero-banner-section">
+    <div id="heroBanner" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+
+        <div class="carousel-indicators banner-indicators">
+            <button type="button" data-bs-target="#heroBanner" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#heroBanner" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#heroBanner" data-bs-slide-to="2"></button>
+        </div>
+
+        <div class="carousel-inner">
+
+            <!-- SLIDE 1 -->
+            <div class="carousel-item active">
+                <div class="banner-slide"
+                     style="background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600&q=85')">
+                    <div class="banner-overlay"></div>
+                    <div class="container h-100 position-relative">
+                        <div class="row h-100 align-items-center">
+                            <div class="col-lg-6 col-md-8 banner-content">
+                                <span class="banner-tag">
+                                    <i class="bi bi-lightning-fill me-1"></i> Compras rapidas y seguras
+                                </span>
+                                <h1 class="banner-title mt-3">
+                                    Bienvenido a<br>
+                                    <span class="banner-accent">Mercado Yuli</span><br>
+                                    Online
+                                </h1>
+                                <p class="banner-subtitle mt-3">
+                                    Productos frescos de Ate Vitarte.<br>
+                                    Carnes, verduras, frutas y mas directo a tu puerta.
+                                </p>
+                                <div class="d-flex flex-wrap gap-3 mt-4">
+                                    <a href="#categorias" class="btn btn-banner-primary">
+                                        <i class="bi bi-basket2 me-2"></i>Ver Productos
+                                    </a>
+                                    <a href="#como-funciona" class="btn btn-banner-outline">
+                                        <i class="bi bi-info-circle me-2"></i>Como Funciona
+                                    </a>
+                                </div>
+                                <div class="banner-stats mt-5">
+                                    <div class="banner-stat"><span class="bstat-num">5</span><span class="bstat-lbl">Categorias</span></div>
+                                    <div class="banner-stat-div"></div>
+                                    <div class="banner-stat"><span class="bstat-num">30+</span><span class="bstat-lbl">Productos</span></div>
+                                    <div class="banner-stat-div"></div>
+                                    <div class="banner-stat"><span class="bstat-num">10+</span><span class="bstat-lbl">Proveedores</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2 -->
+            <div class="carousel-item">
+                <div class="banner-slide"
+                     style="background-image: url('https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1600&q=85')">
+                    <div class="banner-overlay banner-overlay-dark"></div>
+                    <div class="container h-100 position-relative">
+                        <div class="row h-100 align-items-center">
+                            <div class="col-lg-6 col-md-8 banner-content">
+                                <span class="banner-tag-oferta">
+                                    <i class="bi bi-gift-fill me-2"></i>OFERTA EXCLUSIVA
+                                </span>
+                                <h1 class="banner-title mt-3">
+                                    <span class="banner-accent">10% OFF</span><br>
+                                    en tu primera<br>compra
+                                </h1>
+                                <p class="banner-subtitle mt-3">
+                                    Usa el codigo al confirmar tu pedido<br>
+                                    y disfruta un descuento especial.
+                                </p>
+                                <div class="banner-codigo mt-3">
+                                    <span>YULI10</span>
+                                </div>
+                                <div class="d-flex flex-wrap gap-3 mt-4">
+                                    <a href="#categorias" class="btn btn-banner-primary">
+                                        <i class="bi bi-bag-check me-2"></i>Aprovechar Oferta
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3 -->
+            <div class="carousel-item">
+                <div class="banner-slide"
+                     style="background-image: url('https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1600&q=85')">
+                    <div class="banner-overlay"></div>
+                    <div class="container h-100 position-relative">
+                        <div class="row h-100 align-items-center">
+                            <div class="col-lg-6 col-md-8 banner-content">
+                                <span class="banner-tag">
+                                    <i class="bi bi-truck me-1"></i>Delivery en Ate Vitarte
+                                </span>
+                                <h1 class="banner-title mt-3">
+                                    Recibe en casa<br>en menos de
+                                    <span class="banner-accent"> 2 horas</span>
+                                </h1>
+                                <p class="banner-subtitle mt-3">
+                                    Lunes a Sabado de 6:00 AM a 6:00 PM.<br>
+                                    Cobertura en Ate Vitarte y distritos aledanos.
+                                </p>
+                                <div class="d-flex flex-wrap gap-3 mt-4">
+                                    <a href="#categorias" class="btn btn-banner-primary">
+                                        <i class="bi bi-basket2 me-2"></i>Pedir Ahora
+                                    </a>
+                                    <button class="btn btn-banner-outline" data-bs-toggle="modal" data-bs-target="#horariosModal">
+                                        <i class="bi bi-clock me-2"></i>Ver Horarios
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroBanner" data-bs-slide="prev">
+            <div class="banner-arrow"><i class="bi bi-chevron-left"></i></div>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroBanner" data-bs-slide="next">
+            <div class="banner-arrow"><i class="bi bi-chevron-right"></i></div>
+        </button>
+    </div>
+</section>
+
+<!-- ======== BARRA DE BENEFICIOS ======== -->
+<section class="section-beneficios">
+    <div class="container">
+        <div class="row g-0">
+            <div class="col-6 col-md-3">
+                <div class="beneficio-bar-item">
+                    <i class="bi bi-people-fill"></i>
+                    <div>
+                        <strong>Red de Proveedores</strong>
+                        <p>Amplia variedad de productos frescos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="beneficio-bar-item">
+                    <i class="bi bi-shield-fill-check"></i>
+                    <div>
+                        <strong>Confiable y Seguro</strong>
+                        <p>Calidad garantizada en cada pedido</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="beneficio-bar-item">
+                    <i class="bi bi-clock-fill"></i>
+                    <div>
+                        <strong>Rapido y Facil</strong>
+                        <p>Pedidos en minutos, entrega en horas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="beneficio-bar-item border-end-0">
+                    <i class="bi bi-truck-front-fill"></i>
+                    <div>
+                        <strong>Delivery Gratis</strong>
+                        <p>En todos tus pedidos a Ate Vitarte</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======== CATEGORIAS ======== -->
+<section id="categorias" class="section-categorias">
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <span class="section-badge"><i class="bi bi-grid me-1"></i> Nuestros productos</span>
+                <h2 class="section-title mt-2">Categorias del Mercado</h2>
+            </div>
+            <a href="#productos" class="ver-todos-link">Ver todos <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="row g-3 justify-content-center">
+            <div th:each="cat : ${categorias}" class="col-6 col-sm-4 col-lg">
+                <a th:href="@{/categoria/{slug}(slug=${cat.slug})}" class="cat-card-link">
+                    <div class="cat-card text-center">
+                        <div class="cat-icon-wrapper">
+                            <i th:class="${cat.icono}"></i>
+                        </div>
+                        <h6 class="cat-name" th:text="${cat.nombre}">Categoria</h6>
+                        <span class="cat-cta">Ver productos <i class="bi bi-arrow-right"></i></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======== PRODUCTOS DESTACADOS ======== -->
+<section id="productos" class="section-destacados">
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <span class="section-badge"><i class="bi bi-star me-1"></i> Lo mejor del mercado</span>
+                <h2 class="section-title mt-2">Productos Destacados</h2>
+            </div>
+        </div>
+
+        <!-- Filtros por categoria -->
+        <div class="filtros-tabs mb-4">
+            <button class="filtro-btn active" data-cat="todos">Todos</button>
+            <button class="filtro-btn" th:each="cat : ${categorias}"
+                    th:data-cat="${cat.slug}"
+                    th:text="${cat.nombre}">Cat</button>
+        </div>
+
+        <!-- Grid productos con carrusel -->
+        <div class="productos-carousel-wrapper">
+            <button class="carousel-arrow carousel-prev" id="prevDestacados">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <div class="productos-carousel" id="carouselDestacados">
+                <div th:each="prod : ${productosDestacados}"
+                     class="product-card-carousel"
+                     th:data-cat="${prod.categoria.slug}">
+                    <div class="product-card">
+                        <a th:href="@{/producto/{id}(id=${prod.id})}" class="product-img-link">
+                            <div class="product-img-wrapper">
+                                <img th:src="${prod.imagenUrl}" th:alt="${prod.nombre}"
+                                     class="product-img" onerror="this.src='/images/placeholder.svg'">
+                                <span class="product-badge-unit" th:text="'/ ' + ${prod.unidad}">/ kg</span>
+                            </div>
+                        </a>
+                        <div class="product-info">
+                            <span class="product-provider" th:text="${prod.proveedor}">Proveedor</span>
+                            <a th:href="@{/producto/{id}(id=${prod.id})}" class="product-name-link">
+                                <h6 class="product-name" th:text="${prod.nombre}">Producto</h6>
+                            </a>
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <span class="product-price"
+                                      th:text="'S/ ' + ${#numbers.formatDecimal(prod.precio, 1, 2)}">S/ 0.00</span>
+                                <form th:action="@{/carrito/agregar-rapido}" method="post" class="d-inline">
+                                    <input type="hidden" name="productoId" th:value="${prod.id}">
+                                    <input type="hidden" name="cantidad" value="1">
+                                    <input type="hidden" name="returnUrl" value="/">
+                                    <button type="submit" class="btn btn-add-cart" title="Agregar al carrito">
+                                        <i class="bi bi-cart-plus"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-arrow carousel-next" id="nextDestacados">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ======== PRODUCTOS EN OFERTA ======== -->
+<section class="section-ofertas">
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <span class="section-badge section-badge-oferta"><i class="bi bi-tag-fill me-1"></i> Precios especiales</span>
+                <h2 class="section-title mt-2">Productos en Oferta</h2>
+            </div>
+            <a th:href="@{/categoria/verduras}" class="ver-todos-link">Ver todos <i class="bi bi-chevron-right"></i></a>
+        </div>
+
+        <div class="productos-carousel-wrapper">
+            <button class="carousel-arrow carousel-prev" id="prevOfertas">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <div class="productos-carousel" id="carouselOfertas">
+                <div th:each="prod : ${productosOferta}" class="product-card-carousel">
+                    <div class="product-card">
+                        <a th:href="@{/producto/{id}(id=${prod.id})}" class="product-img-link">
+                            <div class="product-img-wrapper">
+                                <span class="badge-oferta">-10%</span>
+                                <img th:src="${prod.imagenUrl}" th:alt="${prod.nombre}"
+                                     class="product-img" onerror="this.src='/images/placeholder.svg'">
+                            </div>
+                        </a>
+                        <div class="product-info">
+                            <span class="product-provider" th:text="${prod.proveedor}">Proveedor</span>
+                            <a th:href="@{/producto/{id}(id=${prod.id})}" class="product-name-link">
+                                <h6 class="product-name" th:text="${prod.nombre}">Producto</h6>
+                            </a>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span class="precio-tachado"
+                                      th:text="'S/ ' + ${#numbers.formatDecimal(prod.precio, 1, 2)}">S/ 0.00</span>
+                                <span class="precio-oferta"
+                                      th:text="'S/ ' + ${#numbers.formatDecimal(prod.precio * 0.9, 1, 2)}">S/ 0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-end mt-2">
+                                <form th:action="@{/carrito/agregar-rapido}" method="post" class="d-inline">
+                                    <input type="hidden" name="productoId" th:value="${prod.id}">
+                                    <input type="hidden" name="cantidad" value="1">
+                                    <input type="hidden" name="returnUrl" value="/">
+                                    <button type="submit" class="btn btn-add-cart" title="Agregar al carrito">
+                                        <i class="bi bi-cart-plus"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-arrow carousel-next" id="nextOfertas">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ======== COMO FUNCIONA ======== -->
+<section id="como-funciona" class="section-como-funciona">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <span class="section-badge"><i class="bi bi-lightbulb me-1"></i> Proceso simple</span>
+            <h2 class="section-title mt-3">Como funciona?</h2>
+            <p class="section-subtitle">Comprar en Mercado Yuli es facil y rapido</p>
+        </div>
+        <div class="pasos-grid">
+            <div class="paso-card" style="--delay:0.1s">
+                <div class="paso-numero">1</div>
+                <div class="paso-icon-wrapper"><i class="bi bi-search"></i></div>
+                <h5 class="paso-title">Elige tus productos</h5>
+                <p class="paso-desc">Navega por nuestras 5 categorias y encuentra lo que necesitas</p>
+            </div>
+            <div class="paso-connector"><i class="bi bi-chevron-right"></i></div>
+            <div class="paso-card" style="--delay:0.2s">
+                <div class="paso-numero">2</div>
+                <div class="paso-icon-wrapper"><i class="bi bi-cart-plus"></i></div>
+                <h5 class="paso-title">Agrega al carrito</h5>
+                <p class="paso-desc">Selecciona la cantidad y agrega los productos que desees</p>
+            </div>
+            <div class="paso-connector"><i class="bi bi-chevron-right"></i></div>
+            <div class="paso-card" style="--delay:0.3s">
+                <div class="paso-numero">3</div>
+                <div class="paso-icon-wrapper"><i class="bi bi-credit-card"></i></div>
+                <h5 class="paso-title">Confirma tu pedido</h5>
+                <p class="paso-desc">Elige envio o retiro, selecciona tu metodo de pago favorito</p>
+            </div>
+            <div class="paso-connector"><i class="bi bi-chevron-right"></i></div>
+            <div class="paso-card" style="--delay:0.4s">
+                <div class="paso-numero">4</div>
+                <div class="paso-icon-wrapper"><i class="bi bi-house-check"></i></div>
+                <h5 class="paso-title">Recibe en casa</h5>
+                <p class="paso-desc">Disfruta tus productos frescos directo del mercado</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======== SECCION VALORES ======== -->
+<section class="section-valores">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <span class="section-badge"><i class="bi bi-award me-1"></i> Por que elegirnos</span>
+            <h2 class="section-title mt-3">Nuestro Compromiso</h2>
+        </div>
+        <div class="row g-4 justify-content-center text-center">
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="valor-card">
+                    <div class="valor-icon"><i class="bi bi-box-seam"></i></div>
+                    <h6>Distribucion</h6>
+                    <p>Entrega rapida y puntual en tu distrito</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="valor-card">
+                    <div class="valor-icon"><i class="bi bi-flower1"></i></div>
+                    <h6>Frescura</h6>
+                    <p>Productos del dia, directo del mercado</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="valor-card">
+                    <div class="valor-icon"><i class="bi bi-shop"></i></div>
+                    <h6>Variedad</h6>
+                    <p>30 productos en 5 categorias diferentes</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="valor-card">
+                    <div class="valor-icon"><i class="bi bi-geo-alt"></i></div>
+                    <h6>Local</h6>
+                    <p>Apoyo al comercio de Ate Vitarte</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="valor-card">
+                    <div class="valor-icon"><i class="bi bi-alarm"></i></div>
+                    <h6>Puntualidad</h6>
+                    <p>Cumplimos los tiempos de entrega</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="valor-card">
+                    <div class="valor-icon"><i class="bi bi-patch-check"></i></div>
+                    <h6>Calidad</h6>
+                    <p>Seleccionamos solo lo mejor para ti</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======== BANNER CTA ======== -->
+<section class="section-cta">
+    <div class="container py-5 text-center">
+        <div class="cta-wrapper">
+            <i class="bi bi-truck fs-1 mb-3 d-block"></i>
+            <h3 class="cta-title">Envio a todo Ate Vitarte</h3>
+            <p class="cta-desc">Recibe tus productos frescos en la puerta de tu casa</p>
+            <a href="#categorias" class="btn btn-cta">
+                <i class="bi bi-bag-check me-2"></i>Empezar a comprar
+            </a>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/modals :: modals}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+
+<script th:if="${mensaje}">
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('toastMensaje').textContent = '[[${mensaje}]]';
+        new bootstrap.Toast(document.getElementById('toastCarrito')).show();
+    });
+</script>
+</body>
+</html>

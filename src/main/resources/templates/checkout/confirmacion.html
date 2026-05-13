@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Pedido Confirmado')}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<section class="section-confirmacion">
+    <div class="container py-4">
+        <!-- Progress steps -->
+        <div class="checkout-steps mt-2 mb-5">
+            <div class="step completed">
+                <div class="step-circle"><i class="bi bi-cart-check"></i></div>
+                <span>Carrito</span>
+            </div>
+            <div class="step-line completed"></div>
+            <div class="step completed">
+                <div class="step-circle"><i class="bi bi-person"></i></div>
+                <span>Datos</span>
+            </div>
+            <div class="step-line completed"></div>
+            <div class="step active completed">
+                <div class="step-circle"><i class="bi bi-check-circle"></i></div>
+                <span>Confirmacion</span>
+            </div>
+        </div>
+
+        <!-- Mensaje de exito -->
+        <div class="text-center mb-5">
+            <div class="confirm-icon-wrapper">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <h2 class="confirm-title mt-4">Pedido Confirmado!</h2>
+            <p class="confirm-subtitle">
+                Gracias por tu compra, <span th:text="${pedido.nombreCliente}">Cliente</span>.
+                Tu pedido ha sido registrado exitosamente.
+            </p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-8">
+                <!-- Info del pedido -->
+                <div class="confirm-card">
+                    <div class="confirm-card-header">
+                        <h5><i class="bi bi-receipt me-2"></i>Detalle del Pedido</h5>
+                        <span class="confirm-order-number" th:text="${pedido.numeroPedido}">MY-000000</span>
+                    </div>
+                    <div class="confirm-card-body">
+                        <!-- Items -->
+                        <table class="table table-confirm">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cant.</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${pedido.items}">
+                                    <td>
+                                        <strong th:text="${item.nombre}">Producto</strong>
+                                        <br><small class="text-muted" th:text="${item.proveedor}">Proveedor</small>
+                                    </td>
+                                    <td class="text-center" th:text="${item.cantidad}">1</td>
+                                    <td class="text-end"
+                                        th:text="'S/ ' + ${#numbers.formatDecimal(item.precioUnitario, 1, 2)}">S/ 0.00</td>
+                                    <td class="text-end fw-semibold"
+                                        th:text="'S/ ' + ${#numbers.formatDecimal(item.subtotal, 1, 2)}">S/ 0.00</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Envio:</strong></td>
+                                    <td class="text-end text-success">Gratis</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td colspan="3" class="text-end"><strong>TOTAL:</strong></td>
+                                    <td class="text-end confirm-total"
+                                        th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total, 1, 2)}">S/ 0.00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Datos del cliente y entrega -->
+                <div class="row g-4 mt-3">
+                    <div class="col-md-6">
+                        <div class="confirm-info-card">
+                            <h6><i class="bi bi-person-fill me-2"></i>Datos del Cliente</h6>
+                            <ul>
+                                <li><strong>Nombre:</strong> <span th:text="${pedido.nombreCliente}">-</span></li>
+                                <li><strong>DNI:</strong> <span th:text="${pedido.dni}">-</span></li>
+                                <li><strong>Email:</strong> <span th:text="${pedido.emailCliente}">-</span></li>
+                                <li><strong>Telefono:</strong> <span th:text="${pedido.telefonoCliente}">-</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="confirm-info-card">
+                            <h6><i class="bi bi-truck me-2"></i>Entrega y Pago</h6>
+                            <ul>
+                                <li>
+                                    <strong>Entrega:</strong>
+                                    <span th:if="${pedido.tipoEntrega == 'envio'}">Envio a domicilio</span>
+                                    <span th:if="${pedido.tipoEntrega == 'retiro'}">Retiro en mercado</span>
+                                </li>
+                                <li th:if="${pedido.tipoEntrega == 'envio' && pedido.direccion != null}">
+                                    <strong>Direccion:</strong> <span th:text="${pedido.direccion}">-</span>
+                                </li>
+                                <li th:if="${pedido.distrito != null}">
+                                    <strong>Distrito:</strong> <span th:text="${pedido.distrito}">-</span>
+                                </li>
+                                <li>
+                                    <strong>Pago:</strong>
+                                    <span th:if="${pedido.metodoPago == 'tarjeta'}">Tarjeta</span>
+                                    <span th:if="${pedido.metodoPago == 'yape'}">Yape</span>
+                                    <span th:if="${pedido.metodoPago == 'pago_local'}">Pago en local</span>
+                                </li>
+                                <li>
+                                    <strong>Fecha:</strong>
+                                    <span th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">-</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones finales -->
+                <div class="d-flex flex-wrap gap-3 justify-content-center mt-5">
+                    <button type="button" class="btn btn-primary-custom" onclick="window.print()">
+                        <i class="bi bi-printer me-2"></i>Imprimir Comprobante
+                    </button>
+                    <a th:href="@{/}" class="btn btn-hero-outline">
+                        <i class="bi bi-house me-2"></i>Volver al Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/modals :: modals}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Terminos y Condiciones')}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<section class="section-terminos">
+    <div class="container py-5" style="max-width: 820px">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-light">
+                <li class="breadcrumb-item"><a th:href="@{/}"><i class="bi bi-house"></i> Inicio</a></li>
+                <li class="breadcrumb-item active">Terminos y Condiciones</li>
+            </ol>
+        </nav>
+
+        <div class="terminos-header mt-3 mb-5">
+            <h1 class="terminos-title"><i class="bi bi-file-text me-2"></i>Terminos y Condiciones</h1>
+            <p class="text-muted">Ultima actualizacion: Mayo 2026</p>
+        </div>
+
+        <div class="terminos-content">
+
+            <div class="terminos-section">
+                <h5><span class="terminos-num">1</span> Aceptacion de los Terminos</h5>
+                <p>Al acceder y utilizar la plataforma web Mercado Yuli Online, el usuario acepta cumplir con los presentes terminos y condiciones. Si no esta de acuerdo con alguno de ellos, debe abstenerse de utilizar el servicio.</p>
+            </div>
+
+            <div class="terminos-section">
+                <h5><span class="terminos-num">2</span> Descripcion del Servicio</h5>
+                <p>Mercado Yuli Online es una plataforma de compras en linea que permite a los clientes adquirir productos del Mercado Yuli ubicado en Ate Vitarte, Lima. El servicio incluye la visualizacion del catalogo de productos, gestion del carrito de compras y proceso de pedido con entrega a domicilio o retiro en tienda.</p>
+            </div>
+
+            <div class="terminos-section">
+                <h5><span class="terminos-num">3</span> Registro de Usuario</h5>
+                <p>Para realizar pedidos, el usuario debe proporcionar informacion veraz y actualizada. Es responsabilidad del usuario mantener la confidencialidad de sus credenciales de acceso. Mercado Yuli no se hace responsable por el uso indebido de la cuenta por parte de terceros.</p>
+            </div>
+
+            <div class="terminos-section">
+                <h5><span class="terminos-num">4</span> Precios y Disponibilidad</h5>
+                <p>Los precios mostrados en la plataforma estan expresados en Soles Peruanos (S/) e incluyen impuestos. Mercado Yuli se reserva el derecho de modificar los precios sin previo aviso. La disponibilidad de los productos esta sujeta al stock del mercado y puede variar segun la epoca del ano y la temporada de los productos.</p>
+            </div>
+
+            <div class="terminos-section">
+                <h5><span class="terminos-num">5</span> Proceso de Pedido y Pago</h5>
+                <p>El pedido se considera confirmado una vez que el usuario recibe el numero de pedido (formato MY-XXXXXXXX). Los metodos de pago aceptados son tarjeta de debito o credito, Yape y pago en efectivo al momento de la entrega. Mercado Yuli no almacena datos de tarjetas bancarias.</p>
+            </div>
+
+            <div class="terminos-section">
+                <h5><span class="terminos-num">6</span> Entrega y Zonas de Cobertura</h5>
+                <p>El servicio de delivery esta disponible en Ate Vitarte, Santa Anita, La Molina, Chaclacayo y Lurigancho-Chosica. Los tiempos de entrega son estimados y pueden variar segun la demanda y condiciones externas. Mercado Yuli no se responsabiliza por retrasos causados por factores ajenos a su control como trafico o condiciones climaticas.</p>
+            </div>
+
+            <div class="terminos-section">
+                <h5><span class="terminos-num">7</span> Politica de Privacidad</h5>
+                <p>Los datos personales proporcionados por el usuario seran utilizados exclusivamente para gestionar los pedidos y mejorar el servicio. No seran compartidos con terceros sin el consentimiento expreso del usuario. El usuario tiene derecho a solicitar la eliminacion de sus datos en cualquier momento comunicandose con nosotros.</p>
+            </div>
+
+            <div class="terminos-section">
+                <h5><span class="terminos-num">8</span> Modificaciones</h5>
+                <p>Mercado Yuli se reserva el derecho de modificar estos terminos en cualquier momento. Los cambios entraran en vigencia desde su publicacion en la plataforma. El uso continuo del servicio despues de dichos cambios implica la aceptacion de los nuevos terminos.</p>
+            </div>
+
+            <div class="terminos-section">
+                <h5><span class="terminos-num">9</span> Contacto</h5>
+                <p>Para consultas sobre estos terminos, puedes contactarnos en <strong>contacto@mercadoyuli.pe</strong> o llamar al <strong>(01) 555-0123</strong> en horario de atencion de lunes a sabado de 6:00 AM a 6:00 PM.</p>
+            </div>
+
+        </div>
+
+        <div class="text-center mt-5">
+            <a th:href="@{/}" class="btn btn-primary-custom">
+                <i class="bi bi-arrow-left me-2"></i>Volver al Inicio
+            </a>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/modals :: modals}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

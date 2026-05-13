@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="modals">
+
+    <!-- ======== MODAL LOGIN ======== -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-custom">
+                <div class="modal-header modal-header-custom">
+                    <div>
+                        <h5 class="modal-title"><i class="bi bi-person-check me-2"></i>Iniciar Sesion</h5>
+                        <p class="modal-subtitle">Bienvenido de vuelta a Mercado Yuli</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="loginForm" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Correo Electronico</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control my-input" id="loginEmail" placeholder="tu@correo.com">
+                            </div>
+                            <div id="errorLoginEmail" class="invalid-feedback d-block"></div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Contrasena</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control my-input" id="loginPassword" placeholder="Tu contrasena">
+                            </div>
+                            <div id="errorLoginPassword" class="invalid-feedback d-block"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom w-100">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Ingresar
+                        </button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <small class="text-muted">No tienes cuenta?
+                            <a href="#" class="link-register" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">Registrate aqui</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== MODAL REGISTRO ======== -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-custom">
+      <div class="modal-header modal-header-custom">
+        <div>
+          <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Crear Cuenta</h5>
+          <p class="modal-subtitle">Unete a la familia Mercado Yuli</p>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="registerForm" novalidate>
+          
+           <!-- DNI -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">DNI</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+              <input type="text" class="form-control my-input" id="regDni" placeholder="Ej: 12345678">
+            </div>
+            <div id="errorRegDni" class="invalid-feedback d-block"></div>
+          </div>
+
+          <!-- Nombre -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre Completo</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              <input type="text" class="form-control my-input" id="regNombre" placeholder="Ej: Maria Elena Garcia Quispe">
+            </div>
+            <div id="errorRegNombre" class="invalid-feedback d-block"></div>
+          </div>
+
+          <!-- Dirección -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Dirección</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+              <input type="text" class="form-control my-input" id="regDireccion" placeholder="Ej: Av. Juan de Dios 153, Ate Vitarte">
+            </div>
+            <div id="errorRegDireccion" class="invalid-feedback d-block"></div>
+          </div>
+
+          <!-- Teléfono -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Teléfono</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+              <input type="text" class="form-control my-input" id="regTelefono" placeholder="Ej: 987654321">
+            </div>
+            <div id="errorRegTelefono" class="invalid-feedback d-block"></div>
+          </div>
+
+          <!-- Correo -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Correo Electrónico</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              <input type="email" class="form-control my-input" id="regEmail" placeholder="usuario@correo.com">
+            </div>
+            <div id="errorRegEmail" class="invalid-feedback d-block"></div>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Contraseña</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock"></i></span>
+              <input type="password" class="form-control my-input" id="regPassword" placeholder="Mínimo 8 caracteres">
+            </div>
+            <div id="errorRegPassword" class="invalid-feedback d-block"></div>
+          </div>
+
+          <!-- Botón -->
+          <button type="submit" class="btn btn-primary-custom w-100">
+            <i class="bi bi-check-circle me-2"></i>Crear Cuenta
+          </button>
+        </form>
+
+        <div class="text-center mt-3">
+          <small class="text-muted">¿Ya tienes cuenta?
+            <a href="#" class="link-register" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Inicia sesión</a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- ======== MODAL EXITO ======== -->
+    <div class="modal fade" id="exitoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content modal-custom text-center">
+                <div class="modal-body p-4">
+                    <div class="success-icon-wrapper mb-3">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <h5 class="fw-bold" id="mensajeExito">Operacion exitosa</h5>
+                    <p class="text-muted mb-3">Bienvenido a Mercado Yuli Online</p>
+                    <button type="button" class="btn btn-primary-custom" data-bs-dismiss="modal">Continuar comprando</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== MODAL BIENVENIDA + DESCUENTO ======== -->
+    <div class="modal fade" id="bienvenidaModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content modal-custom overflow-hidden">
+                <div class="modal-bienvenida-header">
+                    <button type="button" class="btn-close-bienvenida" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+                    <div class="bienvenida-badge"><i class="bi bi-gift-fill me-2"></i>OFERTA DE BIENVENIDA</div>
+                    <h2 class="bienvenida-title">Bienvenido a<br><span>Mercado Yuli Online</span></h2>
+                    <p class="bienvenida-subtitle">Tu mercado de confianza, ahora en tu pantalla</p>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="fw-bold mb-3" style="color:var(--verde-oscuro)"><i class="bi bi-percent me-2"></i>10% de descuento en tu primera compra</h5>
+                            <p class="text-muted mb-4">Usa el codigo al momento de tu pedido y disfruta productos frescos del Mercado Yuli con un descuento especial por ser nuevo cliente.</p>
+                            <div class="codigo-descuento">
+                                <span class="codigo-label">Tu codigo exclusivo:</span>
+                                <div class="codigo-box">
+                                    <span id="codigoDescuento">YULI10</span>
+                                    <button class="btn-copiar" onclick="copiarCodigo()"><i class="bi bi-clipboard" id="iconoCopiar"></i></button>
+                                </div>
+                                <small class="text-muted mt-2 d-block">Valido por 7 dias. Solo primera compra.</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="beneficios-lista">
+                                <div class="beneficio-item"><div class="beneficio-icon"><i class="bi bi-truck"></i></div><div><strong>Envio gratis</strong><p class="mb-0 text-muted" style="font-size:0.82rem">En todos tus pedidos a Ate Vitarte</p></div></div>
+                                <div class="beneficio-item"><div class="beneficio-icon"><i class="bi bi-shield-check"></i></div><div><strong>Productos frescos</strong><p class="mb-0 text-muted" style="font-size:0.82rem">Calidad garantizada directo del mercado</p></div></div>
+                                <div class="beneficio-item"><div class="beneficio-icon"><i class="bi bi-clock"></i></div><div><strong>Entrega rapida</strong><p class="mb-0 text-muted" style="font-size:0.82rem">Recibe en menos de 2 horas</p></div></div>
+                                <div class="beneficio-item"><div class="beneficio-icon"><i class="bi bi-phone"></i></div><div><strong>Pago con Yape</strong><p class="mb-0 text-muted" style="font-size:0.82rem">Acepta tarjeta, Yape y efectivo</p></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 mt-4 justify-content-center">
+                        <a href="#categorias" class="btn btn-primary-custom px-4" data-bs-dismiss="modal"><i class="bi bi-basket2 me-2"></i>Empezar a comprar</a>
+                        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Quizas luego</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== MODAL HORARIOS Y ZONAS ======== -->
+    <div class="modal fade" id="horariosModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content modal-custom">
+                <div class="modal-header modal-header-custom">
+                    <div>
+                        <h5 class="modal-title"><i class="bi bi-clock me-2"></i>Horarios y Zonas de Entrega</h5>
+                        <p class="modal-subtitle">Informacion de cobertura y tiempos de despacho</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-5">
+                            <h6 class="fw-bold mb-3" style="color:var(--verde-oscuro)"><i class="bi bi-calendar-week me-2"></i>Horarios de Atencion</h6>
+                            <div class="horario-tabla">
+                                <div class="horario-fila horario-activo"><span>Lunes a Viernes</span><span>6:00 AM - 6:00 PM</span></div>
+                                <div class="horario-fila horario-activo"><span>Sabado</span><span>6:00 AM - 4:00 PM</span></div>
+                                <div class="horario-fila horario-cerrado"><span>Domingo</span><span>Cerrado</span></div>
+                            </div>
+                            <div class="info-box mt-3"><i class="bi bi-info-circle me-2"></i>Pedidos despues de las 5:00 PM seran atendidos al dia siguiente.</div>
+                        </div>
+                        <div class="col-md-7">
+                            <h6 class="fw-bold mb-3" style="color:var(--verde-oscuro)"><i class="bi bi-geo-alt me-2"></i>Zonas de Cobertura</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-zonas">
+                                    <thead><tr><th>Distrito</th><th>Tiempo estimado</th><th>Costo</th></tr></thead>
+                                    <tbody>
+                                        <tr><td><i class="bi bi-geo-fill text-success me-1"></i>Ate Vitarte</td><td>30 - 45 min</td><td><span class="badge-gratis">Gratis</span></td></tr>
+                                        <tr><td><i class="bi bi-geo-fill text-success me-1"></i>Santa Anita</td><td>45 - 60 min</td><td><span class="badge-gratis">Gratis</span></td></tr>
+                                        <tr><td><i class="bi bi-geo-fill text-warning me-1"></i>La Molina</td><td>60 - 90 min</td><td><span class="badge-gratis">Gratis</span></td></tr>
+                                        <tr><td><i class="bi bi-geo-fill text-warning me-1"></i>Chaclacayo</td><td>60 - 90 min</td><td><span class="badge-gratis">Gratis</span></td></tr>
+                                        <tr><td><i class="bi bi-geo-fill text-warning me-1"></i>Lurigancho</td><td>90 - 120 min</td><td><span class="badge-gratis">Gratis</span></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="info-box"><i class="bi bi-telephone me-2"></i>Consultas al <strong>(01) 555-0123</strong> o WhatsApp <strong>987 654 321</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== MODAL PREGUNTAS FRECUENTES ======== -->
+    <div class="modal fade" id="preguntasModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content modal-custom">
+                <div class="modal-header modal-header-custom">
+                    <div>
+                        <h5 class="modal-title"><i class="bi bi-question-circle me-2"></i>Preguntas Frecuentes</h5>
+                        <p class="modal-subtitle">Todo lo que necesitas saber sobre Mercado Yuli</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="accordion accordion-faq" id="accordionFaq">
+
+                        <div class="accordion-item accordion-faq-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button accordion-faq-btn" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    <i class="bi bi-cart3 me-2"></i> Como realizo un pedido?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#accordionFaq">
+                                <div class="accordion-body accordion-faq-body">
+                                    Selecciona los productos que deseas desde cualquier categoria, agregatlos al carrito y dirígete al checkout. Completa tus datos personales, elige el tipo de entrega y el metodo de pago. Al confirmar, recibiras un numero de pedido unico.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item accordion-faq-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button accordion-faq-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    <i class="bi bi-truck me-2"></i> Cuanto demora el delivery?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#accordionFaq">
+                                <div class="accordion-body accordion-faq-body">
+                                    El tiempo de entrega depende del distrito. En Ate Vitarte demoramos entre 30 y 45 minutos. Para distritos aledanos como Santa Anita y La Molina entre 45 y 90 minutos. Los pedidos se procesan en horario de atencion del mercado.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item accordion-faq-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button accordion-faq-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    <i class="bi bi-credit-card me-2"></i> Que metodos de pago aceptan?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#accordionFaq">
+                                <div class="accordion-body accordion-faq-body">
+                                    Aceptamos tres metodos de pago: tarjeta de debito o credito (Visa, Mastercard), Yape al numero del mercado y pago en efectivo al momento de la entrega o retiro en el local.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item accordion-faq-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button accordion-faq-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    <i class="bi bi-shield-check me-2"></i> Los productos son frescos?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#accordionFaq">
+                                <div class="accordion-body accordion-faq-body">
+                                    Si, todos nuestros productos provienen directamente de los puestos del Mercado Yuli en Ate Vitarte. Las carnes, verduras y frutas son abastecidas diariamente por nuestros proveedores de confianza, garantizando frescura y calidad en cada pedido.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item accordion-faq-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button accordion-faq-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                    <i class="bi bi-arrow-return-left me-2"></i> Puedo cancelar o modificar mi pedido?
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#accordionFaq">
+                                <div class="accordion-body accordion-faq-body">
+                                    Puedes cancelar o modificar tu pedido comunicandote al (01) 555-0123 dentro de los 10 minutos despues de confirmarlo. Pasado ese tiempo el pedido ya estara en preparacion y no podra modificarse.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item accordion-faq-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button accordion-faq-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                                    <i class="bi bi-percent me-2"></i> Como uso mi codigo de descuento?
+                                </button>
+                            </h2>
+                            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#accordionFaq">
+                                <div class="accordion-body accordion-faq-body">
+                                    El codigo de descuento YULI10 te otorga un 10% de descuento en tu primera compra. Es valido por 7 dias desde que lo recibes y se aplica automaticamente al confirmar tu pedido. Solo puede usarse una vez por cliente.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== MODAL POLITICA DE DEVOLUCIONES ======== -->
+    <div class="modal fade" id="devolucionesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content modal-custom">
+                <div class="modal-header modal-header-custom">
+                    <div>
+                        <h5 class="modal-title"><i class="bi bi-arrow-return-left me-2"></i>Politica de Devoluciones</h5>
+                        <p class="modal-subtitle">Conoce nuestro compromiso contigo</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="politica-item">
+                        <div class="politica-icon"><i class="bi bi-patch-check-fill"></i></div>
+                        <div>
+                            <h6>Garantia de frescura</h6>
+                            <p>Si recibes un producto que no cumpla con las condiciones de frescura prometidas, tienes hasta 2 horas despues de la entrega para reportarlo y te haremos el reemplazo sin costo adicional.</p>
+                        </div>
+                    </div>
+                    <div class="politica-item">
+                        <div class="politica-icon"><i class="bi bi-box-seam"></i></div>
+                        <div>
+                            <h6>Producto incorrecto</h6>
+                            <p>Si recibiste un producto diferente al que pediste, comunicate de inmediato al (01) 555-0123. Enviaremos el producto correcto en el menor tiempo posible sin cargo para ti.</p>
+                        </div>
+                    </div>
+                    <div class="politica-item">
+                        <div class="politica-icon"><i class="bi bi-cash-coin"></i></div>
+                        <div>
+                            <h6>Reembolso</h6>
+                            <p>En caso de no poder realizar el reemplazo, realizaremos el reembolso completo al metodo de pago original dentro de las 24 horas siguientes a la confirmacion del reclamo.</p>
+                        </div>
+                    </div>
+                    <div class="politica-item">
+                        <div class="politica-icon"><i class="bi bi-x-circle"></i></div>
+                        <div>
+                            <h6>Productos no sujetos a devolucion</h6>
+                            <p>No se aceptan devoluciones de jugos y batidos preparados al momento, ni de productos que hayan sido manipulados o almacenados incorrectamente por el cliente.</p>
+                        </div>
+                    </div>
+                    <div class="info-box mt-3">
+                        <i class="bi bi-telephone me-2"></i>
+                        Para iniciar un reclamo contactanos al <strong>(01) 555-0123</strong> o escribe a <strong>contacto@mercadoyuli.pe</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== MODAL CONTACTO ======== -->
+    <div class="modal fade" id="contactoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content modal-custom">
+                <div class="modal-header modal-header-custom">
+                    <div>
+                        <h5 class="modal-title"><i class="bi bi-headset me-2"></i>Contactanos</h5>
+                        <p class="modal-subtitle">Estamos aqui para ayudarte</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-5">
+                            <h6 class="fw-bold mb-3" style="color:var(--verde-oscuro)">Canales de atencion</h6>
+                            <div class="contacto-canal">
+                                <div class="canal-icon"><i class="bi bi-telephone-fill"></i></div>
+                                <div><strong>Telefono</strong><p class="mb-0 text-muted">(01) 555-0123</p></div>
+                            </div>
+                            <div class="contacto-canal">
+                                <div class="canal-icon canal-whatsapp"><i class="bi bi-whatsapp"></i></div>
+                                <div><strong>WhatsApp</strong><p class="mb-0 text-muted">987 654 321</p></div>
+                            </div>
+                            <div class="contacto-canal">
+                                <div class="canal-icon canal-email"><i class="bi bi-envelope-fill"></i></div>
+                                <div><strong>Correo</strong><p class="mb-0 text-muted">contacto@mercadoyuli.pe</p></div>
+                            </div>
+                            <div class="contacto-canal">
+                                <div class="canal-icon canal-ubicacion"><i class="bi bi-geo-alt-fill"></i></div>
+                                <div><strong>Ubicacion</strong><p class="mb-0 text-muted">Mercado Yuli, Ate Vitarte, Lima</p></div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <h6 class="fw-bold mb-3" style="color:var(--verde-oscuro)">Enviar mensaje</h6>
+                            <form id="contactoForm" novalidate>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control my-input" id="contactoNombre" placeholder="Tu nombre completo">
+                                    <div id="errorContactoNombre" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="email" class="form-control my-input" id="contactoEmail" placeholder="tu@correo.com">
+                                    <div id="errorContactoEmail" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select my-input" id="contactoAsunto">
+                                        <option value="">Selecciona el motivo</option>
+                                        <option>Consulta sobre un pedido</option>
+                                        <option>Reclamo o devolucion</option>
+                                        <option>Informacion de productos</option>
+                                        <option>Otros</option>
+                                    </select>
+                                    <div id="errorContactoAsunto" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control my-input" id="contactoMensaje" rows="3" placeholder="Escribe tu mensaje aqui..."></textarea>
+                                    <div id="errorContactoMensaje" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                                </div>
+                                <button type="submit" class="btn btn-primary-custom w-100">
+                                    <i class="bi bi-send me-2"></i>Enviar Mensaje
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== MODAL CONFIRMAR ELIMINAR CARRITO ======== -->
+    <div class="modal fade" id="eliminarModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content modal-custom">
+                <div class="modal-body p-4 text-center">
+                    <div class="eliminar-icon mb-3"><i class="bi bi-trash3-fill"></i></div>
+                    <h5 class="fw-bold">Eliminar producto</h5>
+                    <p class="text-muted mb-4">Estas seguro que deseas eliminar <strong id="nombreProductoEliminar">este producto</strong> de tu carrito?</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal"><i class="bi bi-x me-1"></i>Cancelar</button>
+                        <form id="formEliminar" method="post">
+                            <input type="hidden" name="productoId" id="productoIdEliminar">
+                            <button type="submit" class="btn btn-danger px-4"><i class="bi bi-trash3 me-1"></i>Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== TOAST CARRITO ======== -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1090">
+        <div id="toastCarrito" class="toast toast-custom" role="alert">
+            <div class="toast-body d-flex align-items-center gap-2">
+                <i class="bi bi-cart-check-fill text-success fs-5"></i>
+                <span id="toastMensaje">Producto agregado al carrito</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</html>

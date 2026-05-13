@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Checkout')}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<section class="section-checkout">
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-custom">
+                <li class="breadcrumb-item"><a th:href="@{/}"><i class="bi bi-house"></i> Inicio</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/carrito}">Carrito</a></li>
+                <li class="breadcrumb-item active">Checkout</li>
+            </ol>
+        </nav>
+
+        <h2 class="section-title mt-3">
+            <i class="bi bi-lock me-2"></i>Finalizar Compra
+        </h2>
+
+        <!-- Progress steps -->
+        <div class="checkout-steps mt-4 mb-5">
+            <div class="step completed">
+                <div class="step-circle"><i class="bi bi-cart-check"></i></div>
+                <span>Carrito</span>
+            </div>
+            <div class="step-line completed"></div>
+            <div class="step active">
+                <div class="step-circle"><i class="bi bi-person"></i></div>
+                <span>Datos</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <div class="step-circle"><i class="bi bi-check-circle"></i></div>
+                <span>Confirmacion</span>
+            </div>
+        </div>
+
+        <form th:action="@{/checkout/confirmar}" method="post" id="checkoutForm" novalidate>
+            <div class="row g-4">
+                <!-- Columna izquierda: formulario -->
+                <div class="col-lg-8">
+
+                    <!-- Datos del cliente -->
+                    <div class="checkout-card">
+                        <h5 class="checkout-card-title">
+                            <i class="bi bi-person-fill me-2"></i>Datos Personales
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control my-input" id="chkNombre" name="nombreCliente"
+                                           placeholder="Ej: Maria Garcia" required
+                                           th:value="${pedido?.nombreCliente}"
+                                           th:classappend="${errores?.containsKey('nombre')} ? 'is-invalid' : ''">
+                                </div>
+                                <div id="errorChkNombre" class="invalid-feedback d-block" style="font-size:0.82rem"
+                                     th:text="${errores?.get('nombre')}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">DNI <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                    <input type="text" class="form-control my-input" id="chkDni" name="dni"
+                                           placeholder="12345678" maxlength="8" pattern="[0-9]{8}" required
+                                           th:value="${pedido?.dni}"
+                                           th:classappend="${errores?.containsKey('dni')} ? 'is-invalid' : ''">
+                                </div>
+                                <div id="errorChkDni" class="invalid-feedback d-block" style="font-size:0.82rem"
+                                     th:text="${errores?.get('dni')}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Correo Electronico <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control my-input" id="chkEmail" name="emailCliente"
+                                           placeholder="tu@correo.com" required
+                                           th:value="${pedido?.emailCliente}"
+                                           th:classappend="${errores?.containsKey('email')} ? 'is-invalid' : ''">
+                                </div>
+                                <div id="errorChkEmail" class="invalid-feedback d-block" style="font-size:0.82rem"
+                                     th:text="${errores?.get('email')}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Telefono <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                    <input type="tel" class="form-control my-input" id="chkTelefono" name="telefonoCliente"
+                                           placeholder="987 654 321" maxlength="9" required
+                                           th:value="${pedido?.telefonoCliente}"
+                                           th:classappend="${errores?.containsKey('telefono')} ? 'is-invalid' : ''">
+                                </div>
+                                <div id="errorChkTelefono" class="invalid-feedback d-block" style="font-size:0.82rem"
+                                     th:text="${errores?.get('telefono')}"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tipo de entrega -->
+                    <div class="checkout-card mt-4">
+                        <h5 class="checkout-card-title">
+                            <i class="bi bi-truck me-2"></i>Tipo de Entrega
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="radio" class="btn-check" name="tipoEntrega"
+                                       id="envio" value="envio" checked autocomplete="off">
+                                <label class="btn btn-entrega w-100" for="envio">
+                                    <i class="bi bi-truck fs-4 d-block mb-1"></i>
+                                    <strong>Envio a domicilio</strong>
+                                    <small class="d-block text-muted">Recibe en tu puerta</small>
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="radio" class="btn-check" name="tipoEntrega"
+                                       id="retiro" value="retiro" autocomplete="off">
+                                <label class="btn btn-entrega w-100" for="retiro">
+                                    <i class="bi bi-shop fs-4 d-block mb-1"></i>
+                                    <strong>Retiro en mercado</strong>
+                                    <small class="d-block text-muted">Recoge en Mercado Yuli</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Campos de direccion (solo envio) -->
+                        <div id="camposEnvio" class="mt-4">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Direccion <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                        <input type="text" class="form-control my-input" name="direccion"
+                                               placeholder="Av. Principal 123, Dpto 4B" id="inputDireccion">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Distrito</label>
+                                    <select class="form-select my-input" name="distrito">
+                                        <option value="Ate Vitarte" selected>Ate Vitarte</option>
+                                        <option value="Santa Anita">Santa Anita</option>
+                                        <option value="La Molina">La Molina</option>
+                                        <option value="Chaclacayo">Chaclacayo</option>
+                                        <option value="Lurigancho">Lurigancho - Chosica</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Referencia</label>
+                                    <input type="text" class="form-control my-input" name="referencia"
+                                           placeholder="Cerca del parque, frente a la bodega...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metodo de pago -->
+                    <div class="checkout-card mt-4">
+                        <h5 class="checkout-card-title">
+                            <i class="bi bi-credit-card me-2"></i>Metodo de Pago
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="radio" class="btn-check" name="metodoPago"
+                                       id="pagoTarjeta" value="tarjeta" checked autocomplete="off">
+                                <label class="btn btn-pago w-100" for="pagoTarjeta">
+                                    <i class="bi bi-credit-card-2-front fs-3 d-block mb-1"></i>
+                                    <strong>Tarjeta</strong>
+                                    <small class="d-block text-muted">Debito o Credito</small>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="radio" class="btn-check" name="metodoPago"
+                                       id="pagoYape" value="yape" autocomplete="off">
+                                <label class="btn btn-pago w-100" for="pagoYape">
+                                    <i class="bi bi-phone fs-3 d-block mb-1"></i>
+                                    <strong>Yape</strong>
+                                    <small class="d-block text-muted">Pago movil</small>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="radio" class="btn-check" name="metodoPago"
+                                       id="pagoLocal" value="pago_local" autocomplete="off">
+                                <label class="btn btn-pago w-100" for="pagoLocal">
+                                    <i class="bi bi-cash-coin fs-3 d-block mb-1"></i>
+                                    <strong>En el Local</strong>
+                                    <small class="d-block text-muted">Efectivo al recoger</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Campos tarjeta (solo si selecciona tarjeta) -->
+                        <div id="camposTarjeta" class="mt-4">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label class="form-label fw-semibold">Numero de Tarjeta</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
+                                        <input type="text" class="form-control my-input" name="numeroTarjeta"
+                                               placeholder="0000 0000 0000 0000" maxlength="19" id="inputTarjeta">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">CVV</label>
+                                    <input type="text" class="form-control my-input"
+                                           placeholder="123" maxlength="3">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Vencimiento</label>
+                                    <input type="text" class="form-control my-input"
+                                           placeholder="MM/AA" maxlength="5">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Titular</label>
+                                    <input type="text" class="form-control my-input"
+                                           placeholder="Nombre en la tarjeta">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Instrucciones Yape -->
+                        <div id="camposYape" class="mt-4" style="display:none">
+                            <div class="yape-info">
+                                <i class="bi bi-phone fs-2 me-3"></i>
+                                <div>
+                                    <strong>Pagar con Yape</strong>
+                                    <p class="mb-0 text-muted">Al confirmar el pedido, recibirás las instrucciones
+                                        para realizar el Yape al numero del mercado. Tu pedido se procesara
+                                        al verificar el pago.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info pago local -->
+                        <div id="camposLocal" class="mt-4" style="display:none">
+                            <div class="yape-info">
+                                <i class="bi bi-cash-coin fs-2 me-3"></i>
+                                <div>
+                                    <strong>Pago en el Local</strong>
+                                    <p class="mb-0 text-muted">Paga en efectivo al momento de recoger tu pedido
+                                        en el Mercado Yuli. Tendras un plazo de 24 horas para recoger.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna derecha: resumen -->
+                <div class="col-lg-4">
+                    <div class="carrito-resumen sticky-lg-top" style="top: 100px">
+                        <h5 class="resumen-title">
+                            <i class="bi bi-receipt me-2"></i>Resumen
+                        </h5>
+                        <div class="resumen-line" th:each="item : ${items}">
+                            <span th:text="${item.nombre} + ' x' + ${item.cantidad}">Producto</span>
+                            <span th:text="'S/ ' + ${#numbers.formatDecimal(item.subtotal, 1, 2)}">S/ 0.00</span>
+                        </div>
+                        <div class="resumen-divider"></div>
+                        <div class="resumen-line resumen-envio">
+                            <span>Envio</span>
+                            <span class="text-success">Gratis</span>
+                        </div>
+                        <div th:if="${descuento > 0}" class="resumen-line resumen-descuento">
+                            <span><i class="bi bi-tag-fill me-1"></i>Descuento YULI10</span>
+                            <span th:text="'- S/ ' + ${#numbers.formatDecimal(descuento, 1, 2)}">- S/ 0.00</span>
+                        </div>
+                        <div class="resumen-divider"></div>
+                        <div class="resumen-total">
+                            <span>Total a Pagar</span>
+                            <span th:text="'S/ ' + ${#numbers.formatDecimal(total, 1, 2)}">S/ 0.00</span>
+                        </div>
+                        <button type="submit" class="btn btn-checkout w-100 mt-4">
+                            <i class="bi bi-check-circle me-2"></i>Confirmar Pedido
+                        </button>
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                <i class="bi bi-shield-lock me-1"></i>
+                                Pago seguro y protegido
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/modals :: modals}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+<script>
+    // Mostrar/ocultar campos segun tipo de entrega
+    document.querySelectorAll('input[name="tipoEntrega"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const campos = document.getElementById('camposEnvio');
+            campos.style.display = this.value === 'envio' ? 'block' : 'none';
+        });
+    });
+
+    // Mostrar/ocultar campos segun metodo de pago
+    document.querySelectorAll('input[name="metodoPago"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.getElementById('camposTarjeta').style.display = this.value === 'tarjeta' ? 'block' : 'none';
+            document.getElementById('camposYape').style.display = this.value === 'yape' ? 'block' : 'none';
+            document.getElementById('camposLocal').style.display = this.value === 'pago_local' ? 'block' : 'none';
+        });
+    });
+
+    // Formato numero de tarjeta
+    const inputTarjeta = document.getElementById('inputTarjeta');
+    if (inputTarjeta) {
+        inputTarjeta.addEventListener('input', function() {
+            let val = this.value.replace(/\D/g, '').substring(0, 16);
+            let formatted = val.replace(/(\d{4})(?=\d)/g, '$1 ');
+            this.value = formatted;
+        });
+    }
+
+    // Validacion del formulario con mensajes inline
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+        const nombre   = document.getElementById('chkNombre');
+        const dni      = document.getElementById('chkDni');
+        const email    = document.getElementById('chkEmail');
+        const telefono = document.getElementById('chkTelefono');
+        let valid = true;
+
+        // Reset todos los errores
+        this.querySelectorAll('.my-input').forEach(el => el.classList.remove('is-invalid'));
+        ['errorChkNombre','errorChkDni','errorChkEmail','errorChkTelefono','errorChkDireccion']
+            .forEach(id => { const el = document.getElementById(id); if(el) el.textContent = ''; });
+
+        // Nombre
+        if (!nombre.value.trim() || nombre.value.trim().length < 3) {
+            nombre.classList.add('is-invalid');
+            document.getElementById('errorChkNombre').textContent = 'Ingresa tu nombre completo.';
+            valid = false;
+        }
+
+        // DNI
+        if (!dni.value.match(/^[0-9]{8}$/)) {
+            dni.classList.add('is-invalid');
+            document.getElementById('errorChkDni').textContent = 'El DNI debe tener exactamente 8 digitos.';
+            valid = false;
+        }
+
+        // Email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.value)) {
+            email.classList.add('is-invalid');
+            document.getElementById('errorChkEmail').textContent = 'Ingresa un correo electronico valido.';
+            valid = false;
+        }
+
+        // Telefono
+        if (!telefono.value.match(/^[0-9]{9}$/)) {
+            telefono.classList.add('is-invalid');
+            document.getElementById('errorChkTelefono').textContent = 'El telefono debe tener 9 digitos.';
+            valid = false;
+        }
+
+        // Direccion (solo si es envio)
+        const tipoEntrega = this.querySelector('input[name="tipoEntrega"]:checked').value;
+        if (tipoEntrega === 'envio') {
+            const dir = document.getElementById('inputDireccion');
+            if (!dir.value.trim()) {
+                dir.classList.add('is-invalid');
+                document.getElementById('errorChkDireccion').textContent = 'Ingresa tu direccion de envio.';
+                valid = false;
+            }
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            const firstError = this.querySelector('.is-invalid');
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+</script>
+</body>
+</html>

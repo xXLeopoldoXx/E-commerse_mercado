@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Carrito de Compras')}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<section class="section-carrito">
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-custom">
+                <li class="breadcrumb-item"><a th:href="@{/}"><i class="bi bi-house"></i> Inicio</a></li>
+                <li class="breadcrumb-item active">Carrito de Compras</li>
+            </ol>
+        </nav>
+
+        <h2 class="section-title mt-3">
+            <i class="bi bi-cart3 me-2"></i>Tu Carrito
+        </h2>
+
+        <!-- Carrito vacio -->
+        <div th:if="${#lists.isEmpty(items)}" class="carrito-vacio text-center py-5">
+            <div class="vacio-icon">
+                <i class="bi bi-cart-x"></i>
+            </div>
+            <h4 class="mt-4 fw-bold">Tu carrito esta vacio</h4>
+            <p class="text-muted">Agrega productos para comenzar tu pedido</p>
+            <a th:href="@{/}" class="btn btn-primary-custom mt-3">
+                <i class="bi bi-basket2 me-2"></i>Explorar productos
+            </a>
+        </div>
+
+        <!-- Carrito con items -->
+        <div th:unless="${#lists.isEmpty(items)}" class="row g-4 mt-2">
+            <!-- Lista de items -->
+            <div class="col-lg-8">
+                <div class="carrito-items-wrapper">
+                    <div th:each="item : ${items}" class="carrito-item">
+                        <div class="d-flex gap-3 align-items-start">
+                            <img th:src="${item.imagenUrl}" th:alt="${item.nombre}"
+                                 class="carrito-item-img"
+                                 onerror="this.src='/images/placeholder.svg'">
+                            <div class="flex-grow-1">
+                                <h6 class="carrito-item-name" th:text="${item.nombre}">Producto</h6>
+                                <span class="carrito-item-provider" th:text="${item.proveedor}">Proveedor</span>
+                                <span class="carrito-item-unit"
+                                      th:text="'Precio: S/ ' + ${#numbers.formatDecimal(item.precioUnitario, 1, 2)} + ' / ' + ${item.unidad}">
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between mt-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Cantidad -->
+                                <form th:action="@{/carrito/actualizar}" method="post" class="d-flex align-items-center gap-1">
+                                    <input type="hidden" name="productoId" th:value="${item.productoId}">
+                                    <button type="submit" name="cantidad" th:value="${item.cantidad - 1}"
+                                            class="btn btn-qty-sm">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <span class="qty-display" th:text="${item.cantidad}">1</span>
+                                    <button type="submit" name="cantidad" th:value="${item.cantidad + 1}"
+                                            class="btn btn-qty-sm">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </form>
+
+                                <!-- Eliminar con confirmacion -->
+                                <button type="button" class="btn btn-remove" title="Eliminar"
+                                        data-bs-toggle="modal" data-bs-target="#eliminarModal"
+                                        th:data-nombre="${item.nombre}"
+                                        th:data-id="${item.productoId}">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+
+                            <span class="carrito-item-subtotal"
+                                  th:text="'S/ ' + ${#numbers.formatDecimal(item.subtotal, 1, 2)}">S/ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen -->
+            <div class="col-lg-4">
+                <div class="carrito-resumen">
+                    <h5 class="resumen-title">
+                        <i class="bi bi-receipt me-2"></i>Resumen del Pedido
+                    </h5>
+                    <div class="resumen-line" th:each="item : ${items}">
+                        <span th:text="${item.nombre} + ' x' + ${item.cantidad}">Producto x1</span>
+                        <span th:text="'S/ ' + ${#numbers.formatDecimal(item.subtotal, 1, 2)}">S/ 0.00</span>
+                    </div>
+                    <div class="resumen-divider"></div>
+                    <div class="resumen-line">
+                        <span>Subtotal</span>
+                        <span th:text="'S/ ' + ${#numbers.formatDecimal(subtotal, 1, 2)}">S/ 0.00</span>
+                    </div>
+                    <div class="resumen-line resumen-envio">
+                        <span>Envio</span>
+                        <span class="text-success">Gratis</span>
+                    </div>
+                    <div th:if="${descuento > 0}" class="resumen-line resumen-descuento">
+                        <span><i class="bi bi-tag-fill me-1"></i>Descuento YULI10</span>
+                        <span th:text="'- S/ ' + ${#numbers.formatDecimal(descuento, 1, 2)}">- S/ 0.00</span>
+                    </div>
+                    <div class="resumen-divider"></div>
+                    <div class="resumen-total">
+                        <span>Total</span>
+                        <span th:text="'S/ ' + ${#numbers.formatDecimal(total, 1, 2)}">S/ 0.00</span>
+                    </div>
+
+                    <!-- Campo codigo descuento -->
+                    <div class="codigo-section mt-3">
+                        <div th:if="${codigoAplicado == null}">
+                            <p class="codigo-section-label"><i class="bi bi-tag me-1"></i>Tienes un codigo de descuento?</p>
+                            <form th:action="@{/carrito/aplicar-codigo}" method="post">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control my-input text-uppercase"
+                                           name="codigo" placeholder="Ej: YULI10" maxlength="10">
+                                    <button type="submit" class="btn btn-apply-code">Aplicar</button>
+                                </div>
+                            </form>
+                            <!-- Mensaje resultado -->
+                            <div th:if="${codigoMensaje != null}">
+                                <div th:if="${#strings.startsWith(codigoMensaje, 'OK')}"
+                                     class="alert-codigo alert-codigo-ok mt-2">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    <span th:text="${#strings.substring(codigoMensaje, 3)}">msg</span>
+                                </div>
+                                <div th:if="${#strings.startsWith(codigoMensaje, 'ERROR')}"
+                                     class="alert-codigo alert-codigo-error mt-2">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    <span th:text="${#strings.substring(codigoMensaje, 6)}">msg</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${codigoAplicado != null}" class="codigo-aplicado">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            Codigo <strong th:text="${codigoAplicado}">YULI10</strong> aplicado
+                            <form th:action="@{/carrito/quitar-codigo}" method="post" class="d-inline">
+                                <button type="submit" class="btn-quitar-codigo">quitar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <a th:href="@{/checkout}" class="btn btn-checkout w-100 mt-3">
+                        <i class="bi bi-lock me-2"></i>Proceder al Pago
+                    </a>
+                    <a th:href="@{/}" class="btn btn-continue w-100 mt-2">
+                        <i class="bi bi-arrow-left me-2"></i>Seguir Comprando
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/modals :: modals}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

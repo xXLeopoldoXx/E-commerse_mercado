@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${producto.nombre})}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<section class="section-producto-detalle">
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-custom">
+                <li class="breadcrumb-item"><a th:href="@{/}"><i class="bi bi-house"></i> Inicio</a></li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/categoria/{slug}(slug=${producto.categoria.slug})}"
+                       th:text="${producto.categoria.nombre}">Categoria</a>
+                </li>
+                <li class="breadcrumb-item active" th:text="${producto.nombre}">Producto</li>
+            </ol>
+        </nav>
+
+        <div class="row g-4 g-lg-5 mt-2">
+            <!-- Imagen -->
+            <div class="col-lg-6">
+                <div class="producto-img-container">
+                    <img th:src="${producto.imagenUrl}"
+                         th:alt="${producto.nombre}"
+                         class="producto-img-main"
+                         onerror="this.src='/images/placeholder.svg'">
+                    <span class="producto-badge-disponible" th:if="${producto.disponible}">
+                        <i class="bi bi-check-circle me-1"></i> Disponible
+                    </span>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="col-lg-6">
+                <div class="producto-info-wrapper">
+                    <a th:href="@{/categoria/{slug}(slug=${producto.categoria.slug})}"
+                       class="producto-cat-tag">
+                        <i th:class="${producto.categoria.icono} + ' me-1'"></i>
+                        <span th:text="${producto.categoria.nombre}">Categoria</span>
+                    </a>
+
+                    <h1 class="producto-title mt-2" th:text="${producto.nombre}">Producto</h1>
+
+                    <div class="producto-provider mt-2">
+                        <i class="bi bi-shop me-1"></i>
+                        <span th:text="${producto.proveedor}">Proveedor</span>
+                    </div>
+
+                    <p class="producto-desc mt-3" th:text="${producto.descripcion}">Descripcion</p>
+
+                    <div class="producto-price-box mt-4">
+                        <span class="producto-price-label">Precio por <span th:text="${producto.unidad}">kg</span></span>
+                        <span class="producto-price-value"
+                              th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">S/ 0.00</span>
+                    </div>
+
+                    <!-- Agregar al carrito -->
+                    <form th:action="@{/carrito/agregar}" method="post" class="mt-4">
+                        <input type="hidden" name="productoId" th:value="${producto.id}">
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <div class="cantidad-selector">
+                                <button type="button" class="btn btn-qty" onclick="cambiarCantidad(-1)">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" name="cantidad" id="cantidadInput"
+                                       value="1" min="1" max="99" class="qty-input" readonly>
+                                <button type="button" class="btn btn-qty" onclick="cambiarCantidad(1)">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <button type="submit" class="btn btn-agregar-carrito flex-grow-1">
+                                <i class="bi bi-cart-plus me-2"></i>Agregar al carrito
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Info adicional -->
+                    <div class="producto-extras mt-4">
+                        <div class="extra-item">
+                            <i class="bi bi-truck"></i>
+                            <span>Envio disponible a Ate Vitarte</span>
+                        </div>
+                        <div class="extra-item">
+                            <i class="bi bi-shield-check"></i>
+                            <span>Producto fresco garantizado</span>
+                        </div>
+                        <div class="extra-item">
+                            <i class="bi bi-arrow-return-left"></i>
+                            <span>Devolucion si no estas satisfecho</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos relacionados -->
+        <div th:if="${!#lists.isEmpty(relacionados)}" class="mt-5 pt-4">
+            <h4 class="section-title-sm">
+                <i class="bi bi-grid me-2"></i>Productos relacionados
+            </h4>
+            <div class="row g-4 mt-2">
+                <div th:each="rel : ${relacionados}" class="col-6 col-md-3">
+                    <div class="product-card">
+                        <a th:href="@{/producto/{id}(id=${rel.id})}" class="product-img-link">
+                            <div class="product-img-wrapper">
+                                <img th:src="${rel.imagenUrl}" th:alt="${rel.nombre}"
+                                     class="product-img"
+                                     onerror="this.src='/images/placeholder.svg'">
+                            </div>
+                        </a>
+                        <div class="product-info">
+                            <span class="product-provider" th:text="${rel.proveedor}">Proveedor</span>
+                            <a th:href="@{/producto/{id}(id=${rel.id})}" class="product-name-link">
+                                <h6 class="product-name" th:text="${rel.nombre}">Producto</h6>
+                            </a>
+                            <span class="product-price"
+                                  th:text="'S/ ' + ${#numbers.formatDecimal(rel.precio, 1, 2)}">S/ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/modals :: modals}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+<script>
+    function cambiarCantidad(delta) {
+        const input = document.getElementById('cantidadInput');
+        let val = parseInt(input.value) + delta;
+        if (val < 1) val = 1;
+        if (val > 99) val = 99;
+        input.value = val;
+    }
+</script>
+</body>
+</html>

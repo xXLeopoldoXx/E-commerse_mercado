@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<footer th:fragment="footer" class="my-footer">
+    <div class="container">
+        <div class="row g-4 py-5">
+            <!-- Marca -->
+            <div class="col-12 col-md-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-shop fs-3 text-warning"></i>
+                    <span class="footer-brand">Mercado Yuli</span>
+                </div>
+                <p class="footer-desc">
+                    Tu mercado de confianza en Ate Vitarte, ahora a un clic de distancia.
+                    Productos frescos, precios justos y entrega a domicilio.
+                </p>
+                <div class="d-flex gap-3 mt-3">
+                    <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-whatsapp"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-tiktok"></i></a>
+                </div>
+            </div>
+
+            <!-- Categorias -->
+            <div class="col-6 col-md-2">
+                <h6 class="footer-title">Categorias</h6>
+                <ul class="footer-links">
+                    <li th:each="cat : ${categorias}">
+                        <a th:href="@{/categoria/{slug}(slug=${cat.slug})}" th:text="${cat.nombre}">Cat</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Ayuda -->
+            <div class="col-6 col-md-3">
+                <h6 class="footer-title">Informacion</h6>
+                <ul class="footer-links">
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#preguntasModal"><i class="bi bi-question-circle me-1"></i>Preguntas frecuentes</a></li>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#devolucionesModal"><i class="bi bi-arrow-return-left me-1"></i>Politica de devoluciones</a></li>
+                    <li><a th:href="@{/terminos}"><i class="bi bi-file-text me-1"></i>Terminos y condiciones</a></li>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#contactoModal"><i class="bi bi-headset me-1"></i>Contacto</a></li>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#horariosModal"><i class="bi bi-clock me-1"></i>Horarios y Zonas de Entrega</a></li>
+                </ul>
+            </div>
+
+            <!-- Contacto -->
+            <div class="col-12 col-md-3">
+                <h6 class="footer-title">Contacto</h6>
+                <ul class="footer-links footer-contact">
+                    <li>
+                        <i class="bi bi-geo-alt me-2"></i>
+                        Mercado Yuli, Ate Vitarte, Lima
+                    </li>
+                    <li>
+                        <i class="bi bi-telephone me-2"></i>
+                        (01) 555-0123
+                    </li>
+                    <li>
+                        <i class="bi bi-envelope me-2"></i>
+                        contacto@mercadoyuli.pe
+                    </li>
+                    <li>
+                        <i class="bi bi-clock me-2"></i>
+                        Lun - Sab: 6:00 AM - 6:00 PM
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Mercado Yuli Online. Proyecto Academico - UTP.
+                Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+</html>
