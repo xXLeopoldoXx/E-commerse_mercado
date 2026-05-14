@@ -54,6 +54,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
             limpiarErrores(registerForm);
 
+            // Validar DNI
+            const dni = document.getElementById('regDni');
+            if (dni && (!dni.value.match(/^[0-9]{8}$/))) {
+                mostrarError(dni, 'errorRegDni', 'El DNI debe tener exactamente 8 digitos.');
+                valido = false;
+            }
+
+            // Validar telefono
+            const telefono = document.getElementById('regTelefono');
+            if (telefono && (!telefono.value.match(/^[0-9]{9}$/))) {
+                mostrarError(telefono, 'errorRegTelefono', 'El telefono debe tener 9 digitos.');
+                valido = false;
+            }
+
             // Validar nombre
             const nombre = document.getElementById('regNombre');
             if (!nombre.value.trim() || nombre.value.trim().length < 3) {

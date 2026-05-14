@@ -47,95 +47,80 @@
     </div>
 
     <!-- ======== MODAL REGISTRO ======== -->
-<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content modal-custom">
-      <div class="modal-header modal-header-custom">
-        <div>
-          <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Crear Cuenta</h5>
-          <p class="modal-subtitle">Unete a la familia Mercado Yuli</p>
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-custom">
+                <div class="modal-header modal-header-custom">
+                    <div>
+                        <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Crear Cuenta</h5>
+                        <p class="modal-subtitle">Unete a la familia Mercado Yuli</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="registerForm" novalidate>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">DNI <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                    <input type="text" class="form-control my-input" id="regDni" placeholder="Ej: 12345678" maxlength="8">
+                                </div>
+                                <div id="errorRegDni" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Telefono <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                    <input type="tel" class="form-control my-input" id="regTelefono" placeholder="Ej: 987654321" maxlength="9">
+                                </div>
+                                <div id="errorRegTelefono" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control my-input" id="regNombre" placeholder="Ej: Maria Elena Garcia Quispe">
+                                </div>
+                                <div id="errorRegNombre" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Direccion</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                    <input type="text" class="form-control my-input" id="regDireccion" placeholder="Ej: Av. Juan de Dios 153, Ate Vitarte">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Correo Electronico <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control my-input" id="regEmail" placeholder="usuario@correo.com">
+                                </div>
+                                <div id="errorRegEmail" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <label class="form-label fw-semibold">Contrasena <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input type="password" class="form-control my-input" id="regPassword" placeholder="Minimo 8 caracteres">
+                                </div>
+                                <div id="errorRegPassword" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom w-100 mt-2">
+                            <i class="bi bi-check-circle me-2"></i>Crear Cuenta
+                        </button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <small class="text-muted">Ya tienes cuenta?
+                            <a href="#" class="link-register" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Inicia sesion</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4">
-        <form id="registerForm" novalidate>
-          
-           <!-- DNI -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">DNI</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-              <input type="text" class="form-control my-input" id="regDni" placeholder="Ej: 12345678">
-            </div>
-            <div id="errorRegDni" class="invalid-feedback d-block"></div>
-          </div>
-
-          <!-- Nombre -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Nombre Completo</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-person"></i></span>
-              <input type="text" class="form-control my-input" id="regNombre" placeholder="Ej: Maria Elena Garcia Quispe">
-            </div>
-            <div id="errorRegNombre" class="invalid-feedback d-block"></div>
-          </div>
-
-          <!-- Dirección -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Dirección</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-              <input type="text" class="form-control my-input" id="regDireccion" placeholder="Ej: Av. Juan de Dios 153, Ate Vitarte">
-            </div>
-            <div id="errorRegDireccion" class="invalid-feedback d-block"></div>
-          </div>
-
-          <!-- Teléfono -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Teléfono</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-              <input type="text" class="form-control my-input" id="regTelefono" placeholder="Ej: 987654321">
-            </div>
-            <div id="errorRegTelefono" class="invalid-feedback d-block"></div>
-          </div>
-
-          <!-- Correo -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Correo Electrónico</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-              <input type="email" class="form-control my-input" id="regEmail" placeholder="usuario@correo.com">
-            </div>
-            <div id="errorRegEmail" class="invalid-feedback d-block"></div>
-          </div>
-
-          <!-- Contraseña -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Contraseña</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-lock"></i></span>
-              <input type="password" class="form-control my-input" id="regPassword" placeholder="Mínimo 8 caracteres">
-            </div>
-            <div id="errorRegPassword" class="invalid-feedback d-block"></div>
-          </div>
-
-          <!-- Botón -->
-          <button type="submit" class="btn btn-primary-custom w-100">
-            <i class="bi bi-check-circle me-2"></i>Crear Cuenta
-          </button>
-        </form>
-
-        <div class="text-center mt-3">
-          <small class="text-muted">¿Ya tienes cuenta?
-            <a href="#" class="link-register" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Inicia sesión</a>
-          </small>
-        </div>
-      </div>
     </div>
-  </div>
-</div>
-
 
     <!-- ======== MODAL EXITO ======== -->
     <div class="modal fade" id="exitoModal" tabindex="-1" aria-hidden="true">
