@@ -80,12 +80,12 @@ public class ProductoService {
         productos.add(crearProducto(idCounter++, "Atun en Conserva", "Atun en conserva en aceite vegetal, practico y nutritivo.", 5.50, "Distribuidora Central", "unidad", "/images/atun.png", abarrotes));
 
         // Juguerias
-        productos.add(crearProducto(idCounter++, "Jugo de Naranja", "Jugo de naranja natural recien exprimido. Vaso de 500ml lleno de vitamina C.", 5.00, "Jugueria La Vida", "vaso", "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&q=80", juguerias));
-        productos.add(crearProducto(idCounter++, "Extracto de Zanahoria", "Extracto puro de zanahoria con un toque de limon. Vaso de 350ml.", 4.50, "Jugueria Salud Total", "vaso", "https://images.unsplash.com/photo-1615478503562-ec2d8aa0e24e?w=400&q=80", juguerias));
-        productos.add(crearProducto(idCounter++, "Batido de Fresa", "Batido cremoso de fresa con leche. Vaso de 500ml refrescante y dulce.", 7.00, "Jugueria La Vida", "vaso", "https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&q=80", juguerias));
-        productos.add(crearProducto(idCounter++, "Jugo de Papaya", "Jugo natural de papaya con un toque de miel. Vaso de 500ml.", 5.50, "Jugueria Salud Total", "vaso", "https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=400&q=80", juguerias));
-        productos.add(crearProducto(idCounter++, "Jugo Surtido", "Mezcla de frutas de temporada: mango, papaya y platano. Vaso de 500ml.", 6.50, "Jugueria La Vida", "vaso", "https://images.unsplash.com/photo-1502741224143-90386d7f8c82?w=400&q=80", juguerias));
-        productos.add(crearProducto(idCounter++, "Emoliente", "Emoliente caliente con linaza, boldo y limon. La bebida tradicional peruana.", 3.00, "Jugueria Salud Total", "vaso", "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80", juguerias));
+        productos.add(crearProducto(idCounter++, "Jugo de Naranja", "Jugo de naranja natural recien exprimido. Vaso de 500ml lleno de vitamina C.", 5.00, "Jugueria La Vida", "vaso", "/images/jugoNaranja.png", juguerias));
+        productos.add(crearProducto(idCounter++, "Extracto de Zanahoria", "Extracto puro de zanahoria con un toque de limon. Vaso de 350ml.", 4.50, "Jugueria Salud Total", "vaso", "/images/extractoZanahoria.png", juguerias));
+        productos.add(crearProducto(idCounter++, "Batido de Fresa", "Batido cremoso de fresa con leche. Vaso de 500ml refrescante y dulce.", 7.00, "Jugueria La Vida", "vaso", "/images/batidoFresa.png", juguerias));
+        productos.add(crearProducto(idCounter++, "Jugo de Papaya", "Jugo natural de papaya con un toque de miel. Vaso de 500ml.", 5.50, "Jugueria Salud Total", "vaso", "/images/jugoPapaya.png", juguerias));
+        productos.add(crearProducto(idCounter++, "Jugo Surtido", "Mezcla de frutas de temporada: mango, papaya y platano. Vaso de 500ml.", 6.50, "Jugueria La Vida", "vaso", "/images/jugoSurtido.png", juguerias));
+        productos.add(crearProducto(idCounter++, "Emoliente", "Emoliente caliente con linaza, boldo y limon. La bebida tradicional peruana.", 3.00, "Jugueria Salud Total", "vaso", "/images/emoliente.png", juguerias));
     }
 
     private Producto crearProducto(Long id, String nombre, String desc, double precio,
