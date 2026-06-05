@@ -32,13 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             if (valido) {
-                // Simular login exitoso
-                document.getElementById('mensajeExito').textContent = 'Bienvenido a Mercado Yuli!';
-                const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-                if (loginModal) loginModal.hide();
-                setTimeout(() => {
-                    new bootstrap.Modal(document.getElementById('exitoModal')).show();
-                }, 300);
+                loginForm.submit();
             }
         });
     }
@@ -93,12 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             if (valido) {
-                document.getElementById('mensajeExito').textContent = 'Cuenta creada exitosamente!';
-                const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
-                if (registerModal) registerModal.hide();
-                setTimeout(() => {
-                    new bootstrap.Modal(document.getElementById('exitoModal')).show();
-                }, 300);
+                registerForm.submit();
             }
         });
     }
@@ -197,16 +186,88 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ==========================================
-// MODAL BIENVENIDA (una sola vez por sesion)
+// FLASH MESSAGES DEL SERVIDOR (login/registro)
+// Abre el modal correcto con el error o exito
 // ==========================================
 window.addEventListener('load', function () {
-    const visto = sessionStorage.getItem('bienvenidaVisto');
-    const modal = document.getElementById('bienvenidaModal');
-    if (!visto && modal) {
-        setTimeout(() => {
-            new bootstrap.Modal(modal).show();
-            sessionStorage.setItem('bienvenidaVisto', 'true');
-        }, 1200);
+    let hayFlash = false;
+
+    const flashLogin    = document.getElementById('flashMensajeLogin');
+    const flashRegistro = document.getElementById('flashMensajeRegistro');
+
+    function parsearMensaje(raw) {
+        const idx = raw.indexOf(':');
+        if (idx === -1) return null;
+        return { tipo: raw.substring(0, idx), texto: raw.substring(idx + 1) };
+    }
+
+    // — Flash de LOGIN —
+    if (flashLogin && flashLogin.dataset.mensaje) {
+        const m = parsearMensaje(flashLogin.dataset.mensaje);
+        if (m) {
+            hayFlash = true;
+            if (m.tipo === 'ERROR') {
+                const alerta = document.getElementById('alertaLoginServer');
+                const texto  = document.getElementById('alertaLoginTexto');
+                if (alerta && texto) {
+                    texto.textContent = m.texto;
+                    alerta.classList.remove('d-none');
+                }
+                setTimeout(() => {
+                    const modal = document.getElementById('loginModal');
+                    if (modal) new bootstrap.Modal(modal).show();
+                }, 150);
+            } else if (m.tipo === 'OK') {
+                // Login exitoso: mostrar toast de bienvenida
+                const toastEl  = document.getElementById('toastCarrito');
+                const toastMsg = document.getElementById('toastMensaje');
+                if (toastEl && toastMsg) {
+                    toastMsg.textContent = m.texto;
+                    toastEl.querySelector('.bi')?.classList.replace('bi-cart-check-fill', 'bi-person-check-fill');
+                    new bootstrap.Toast(toastEl, { delay: 4000 }).show();
+                }
+            }
+        }
+    }
+
+    // — Flash de REGISTRO —
+    if (flashRegistro && flashRegistro.dataset.mensaje) {
+        const m = parsearMensaje(flashRegistro.dataset.mensaje);
+        if (m) {
+            hayFlash = true;
+            if (m.tipo === 'ERROR') {
+                const alerta = document.getElementById('alertaRegistroServer');
+                const texto  = document.getElementById('alertaRegistroTexto');
+                if (alerta && texto) {
+                    texto.textContent = m.texto;
+                    alerta.classList.remove('d-none');
+                }
+                setTimeout(() => {
+                    const modal = document.getElementById('registerModal');
+                    if (modal) new bootstrap.Modal(modal).show();
+                }, 150);
+            } else if (m.tipo === 'OK') {
+                // Registro exitoso: mostrar modal de exito
+                const exito = document.getElementById('exitoModal');
+                const msg   = document.getElementById('mensajeExito');
+                if (exito && msg) {
+                    msg.textContent = 'Cuenta creada correctamente. Ahora puedes iniciar sesion.';
+                    setTimeout(() => new bootstrap.Modal(exito).show(), 150);
+                }
+            }
+        }
+    }
+
+    // — Modal de bienvenida: solo si no hay flash messages —
+    if (!hayFlash) {
+        const visto = sessionStorage.getItem('bienvenidaVisto');
+        const modal = document.getElementById('bienvenidaModal');
+        if (!visto && modal) {
+            setTimeout(() => {
+                new bootstrap.Modal(modal).show();
+                sessionStorage.setItem('bienvenidaVisto', 'true');
+            }, 1200);
+        }
     }
 });
 

@@ -1,9 +1,13 @@
 package com.mercadoyuli.controller;
 
 import com.mercadoyuli.model.Pedido;
+import com.mercadoyuli.model.PedidoEntity;
+import com.mercadoyuli.model.Usuario;
+import com.mercadoyuli.service.PedidoService;
 import com.mercadoyuli.model.Producto;
 import com.mercadoyuli.service.CarritoService;
 import com.mercadoyuli.service.ProductoService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +23,13 @@ public class CarritoController {
 
     private final CarritoService carritoService;
     private final ProductoService productoService;
+    private final PedidoService pedidoService;
 
-    public CarritoController(CarritoService carritoService, ProductoService productoService) {
+    public CarritoController(CarritoService carritoService, ProductoService productoService,
+                             PedidoService pedidoService) {
         this.carritoService = carritoService;
         this.productoService = productoService;
+        this.pedidoService = pedidoService;
     }
 
     @PostMapping("/carrito/agregar")
@@ -95,9 +102,18 @@ public class CarritoController {
     }
 
     @GetMapping("/checkout")
-    public String checkout(Model model) {
+    public String checkout(Model model, HttpSession session) {
         if (carritoService.estaVacio()) {
             return "redirect:/carrito";
+        }
+        Pedido pedido = new Pedido();
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+        if (usuario != null) {
+            pedido.setNombreCliente(usuario.getNombre());
+            pedido.setEmailCliente(usuario.getEmail());
+            pedido.setTelefonoCliente(usuario.getTelefono());
+            pedido.setDni(usuario.getDni());
+            pedido.setDireccion(usuario.getDireccion());
         }
         model.addAttribute("items", carritoService.obtenerItems());
         model.addAttribute("subtotal", carritoService.obtenerSubtotal());
@@ -106,7 +122,7 @@ public class CarritoController {
         model.addAttribute("codigoAplicado", carritoService.getCodigoAplicado());
         model.addAttribute("carritoCount", carritoService.obtenerCantidadTotal());
         model.addAttribute("categorias", productoService.obtenerCategorias());
-        model.addAttribute("pedido", new Pedido());
+        model.addAttribute("pedido", pedido);
         return "checkout/formulario";
     }
 
@@ -148,6 +164,16 @@ public class CarritoController {
         pedido.setFechaPedido(LocalDateTime.now());
         pedido.setItems(new ArrayList<>(carritoService.obtenerItems()));
         pedido.setTotal(carritoService.obtenerTotal());
+
+        // Guardar pedido en base de datos PostgreSQL
+        pedidoService.guardarPedido(
+            pedido,
+            carritoService.obtenerItems(),
+            carritoService.obtenerSubtotal(),
+            carritoService.obtenerDescuento(),
+            carritoService.obtenerTotal(),
+            carritoService.getCodigoAplicado()
+        );
 
         model.addAttribute("pedido", pedido);
         model.addAttribute("carritoCount", 0);

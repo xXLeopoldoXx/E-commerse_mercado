@@ -3,6 +3,10 @@
 
 <div th:fragment="modals">
 
+    <!-- Flash messages del servidor (leidos por JS para abrir modales con errores) -->
+    <span id="flashMensajeLogin"   class="d-none" th:attr="data-mensaje=${mensajeLogin   ?: ''}"></span>
+    <span id="flashMensajeRegistro" class="d-none" th:attr="data-mensaje=${mensajeRegistro ?: ''}"></span>
+
     <!-- ======== MODAL LOGIN ======== -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -15,12 +19,22 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <form id="loginForm" novalidate>
+                    <!-- Alerta de error del servidor -->
+                    <div id="alertaLoginServer" class="alert alert-danger py-2 px-3 mb-3 d-none" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span id="alertaLoginTexto"></span>
+                    </div>
+                    <!-- Alerta de exito del servidor -->
+                    <div id="alertaLoginExito" class="alert alert-success py-2 px-3 mb-3 d-none" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <span id="alertaLoginExitoTexto"></span>
+                    </div>
+                    <form id="loginForm" th:action="@{/login}" method="post" novalidate>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Correo Electronico</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" class="form-control my-input" id="loginEmail" placeholder="tu@correo.com">
+                                <input type="email" class="form-control my-input" id="loginEmail" name="email" placeholder="tu@correo.com">
                             </div>
                             <div id="errorLoginEmail" class="invalid-feedback d-block"></div>
                         </div>
@@ -28,7 +42,7 @@
                             <label class="form-label fw-semibold">Contrasena</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                <input type="password" class="form-control my-input" id="loginPassword" placeholder="Tu contrasena">
+                                <input type="password" class="form-control my-input" id="loginPassword" name="password" placeholder="Tu contrasena">
                             </div>
                             <div id="errorLoginPassword" class="invalid-feedback d-block"></div>
                         </div>
@@ -58,13 +72,18 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <form id="registerForm" novalidate>
+                    <!-- Alerta de error/exito del servidor -->
+                    <div id="alertaRegistroServer" class="alert alert-danger py-2 px-3 mb-3 d-none" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span id="alertaRegistroTexto"></span>
+                    </div>
+                    <form id="registerForm" th:action="@{/registro}" method="post" novalidate>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">DNI <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                    <input type="text" class="form-control my-input" id="regDni" placeholder="Ej: 12345678" maxlength="8">
+                                    <input type="text" class="form-control my-input" id="regDni" name="dni" placeholder="Ej: 12345678" maxlength="8">
                                 </div>
                                 <div id="errorRegDni" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
                             </div>
@@ -72,7 +91,7 @@
                                 <label class="form-label fw-semibold">Telefono <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                    <input type="tel" class="form-control my-input" id="regTelefono" placeholder="Ej: 987654321" maxlength="9">
+                                    <input type="tel" class="form-control my-input" id="regTelefono" name="telefono" placeholder="Ej: 987654321" maxlength="9">
                                 </div>
                                 <div id="errorRegTelefono" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
                             </div>
@@ -80,7 +99,7 @@
                                 <label class="form-label fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                    <input type="text" class="form-control my-input" id="regNombre" placeholder="Ej: Maria Elena Garcia Quispe">
+                                    <input type="text" class="form-control my-input" id="regNombre" name="nombre" placeholder="Ej: Maria Elena Garcia Quispe">
                                 </div>
                                 <div id="errorRegNombre" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
                             </div>
@@ -88,14 +107,14 @@
                                 <label class="form-label fw-semibold">Direccion</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                                    <input type="text" class="form-control my-input" id="regDireccion" placeholder="Ej: Av. Juan de Dios 153, Ate Vitarte">
+                                    <input type="text" class="form-control my-input" id="regDireccion" name="direccion" placeholder="Ej: Av. Juan de Dios 153, Ate Vitarte">
                                 </div>
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Correo Electronico <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                    <input type="email" class="form-control my-input" id="regEmail" placeholder="usuario@correo.com">
+                                    <input type="email" class="form-control my-input" id="regEmail" name="email" placeholder="usuario@correo.com">
                                 </div>
                                 <div id="errorRegEmail" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
                             </div>
@@ -103,7 +122,7 @@
                                 <label class="form-label fw-semibold">Contrasena <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                    <input type="password" class="form-control my-input" id="regPassword" placeholder="Minimo 8 caracteres">
+                                    <input type="password" class="form-control my-input" id="regPassword" name="password" placeholder="Minimo 8 caracteres">
                                 </div>
                                 <div id="errorRegPassword" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
                             </div>
