@@ -1,14 +1,27 @@
 package com.mercadoyuli.model;
 
+import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Pedido {
 
     private String numeroPedido;
+
+    @NotBlank(message = "El nombre completo es obligatorio")
+    @Size(min = 3, message = "El nombre debe tener al menos 3 caracteres")
     private String nombreCliente;
+
+    @NotBlank(message = "El correo electronico es obligatorio")
+    @Email(message = "El correo electronico no es valido")
     private String emailCliente;
+
+    @NotBlank(message = "El telefono es obligatorio")
+    @Pattern(regexp = "[0-9]{9}", message = "El telefono debe tener exactamente 9 digitos")
     private String telefonoCliente;
+
+    @NotBlank(message = "El DNI es obligatorio")
+    @Pattern(regexp = "[0-9]{8}", message = "El DNI debe tener exactamente 8 digitos")
     private String dni;
 
     // Envio
@@ -20,6 +33,9 @@ public class Pedido {
     // Pago
     private String metodoPago;   // "tarjeta", "yape", "pago_local"
     private String numeroTarjeta;
+    private String cvv;
+    private String vencimiento;
+    private String titular;
 
     private List<CarritoItem> items;
     private double total;
@@ -62,6 +78,15 @@ public class Pedido {
 
     public String getNumeroTarjeta() { return numeroTarjeta; }
     public void setNumeroTarjeta(String numeroTarjeta) { this.numeroTarjeta = numeroTarjeta; }
+
+    public String getCvv() { return cvv; }
+    public void setCvv(String cvv) { this.cvv = cvv; }
+
+    public String getVencimiento() { return vencimiento; }
+    public void setVencimiento(String vencimiento) { this.vencimiento = vencimiento; }
+
+    public String getTitular() { return titular; }
+    public void setTitular(String titular) { this.titular = titular; }
 
     public List<CarritoItem> getItems() { return items; }
     public void setItems(List<CarritoItem> items) { this.items = items; }

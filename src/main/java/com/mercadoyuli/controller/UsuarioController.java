@@ -63,8 +63,12 @@ public class UsuarioController {
         }
         var usuario = usuarioService.login(email, password);
         if (usuario.isPresent()) {
-            session.setAttribute("usuarioLogueado", usuario.get());
             String primerNombre = usuario.get().getNombre().split(" ")[0];
+            if ("ADMIN".equals(usuario.get().getRol())) {
+                session.setAttribute("adminLogueado", usuario.get());
+                return "redirect:/admin/dashboard";
+            }
+            session.setAttribute("usuarioLogueado", usuario.get());
             redirectAttributes.addFlashAttribute("mensajeLogin",
                     "OK:Bienvenido de vuelta, " + primerNombre + "!");
         } else {

@@ -45,6 +45,13 @@
                                  class="product-img"
                                  onerror="this.src='/images/placeholder.svg'">
                             <span class="product-badge-unit" th:text="'x ' + ${prod.unidad}">x kg</span>
+                            <span th:if="${prod.stock == 0}"
+                                  class="position-absolute top-0 start-0 badge bg-danger m-1"
+                                  style="font-size:.68rem;">Sin stock</span>
+                            <span th:if="${prod.stock > 0 and prod.stock <= 10}"
+                                  class="position-absolute top-0 start-0 badge bg-warning text-dark m-1"
+                                  style="font-size:.68rem;"
+                                  th:text="'Stock: ' + ${prod.stock}">Bajo</span>
                         </div>
                     </a>
                     <div class="product-info">
@@ -60,7 +67,8 @@
                                 <input type="hidden" name="cantidad" value="1">
                                 <input type="hidden" name="returnUrl"
                                        th:value="'/categoria/' + ${categoria.slug}">
-                                <button type="submit" class="btn btn-add-cart" title="Agregar al carrito">
+                                <button type="submit" class="btn btn-add-cart" title="Agregar al carrito"
+                                        th:disabled="${prod.stock == 0}">
                                     <i class="bi bi-cart-plus"></i>
                                 </button>
                             </form>

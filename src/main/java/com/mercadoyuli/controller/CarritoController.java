@@ -1,5 +1,6 @@
 package com.mercadoyuli.controller;
 
+import com.mercadoyuli.model.CarritoItem;
 import com.mercadoyuli.model.Pedido;
 import com.mercadoyuli.model.PedidoEntity;
 import com.mercadoyuli.model.Usuario;
@@ -8,8 +9,10 @@ import com.mercadoyuli.model.Producto;
 import com.mercadoyuli.service.CarritoService;
 import com.mercadoyuli.service.ProductoService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -127,21 +130,52 @@ public class CarritoController {
     }
 
     @PostMapping("/checkout/confirmar")
-    public String confirmarPedido(@ModelAttribute Pedido pedido, Model model) {
-        // Validar campos obligatorios del lado del servidor
+    public String confirmarPedido(@Valid @ModelAttribute Pedido pedido,
+                                  BindingResult bindingResult,
+                                  Model model) {
         java.util.Map<String, String> errores = new java.util.HashMap<>();
 
-        if (pedido.getNombreCliente() == null || pedido.getNombreCliente().trim().length() < 3)
-            errores.put("nombre", "Ingresa tu nombre completo.");
-        if (pedido.getDni() == null || !pedido.getDni().matches("[0-9]{8}"))
-            errores.put("dni", "El DNI debe tener exactamente 8 digitos.");
-        if (pedido.getEmailCliente() == null || !pedido.getEmailCliente().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"))
-            errores.put("email", "Ingresa un correo electronico valido.");
-        if (pedido.getTelefonoCliente() == null || !pedido.getTelefonoCliente().matches("[0-9]{9}"))
-            errores.put("telefono", "El telefono debe tener 9 digitos.");
+        // Convertir errores de Spring Validation al mapa que usa el template
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(fe -> {
+                String key = switch (fe.getField()) {
+                    case "nombreCliente" -> "nombre";
+                    case "emailCliente"  -> "email";
+                    case "telefonoCliente" -> "telefono";
+                    default -> fe.getField();
+                };
+                errores.putIfAbsent(key, fe.getDefaultMessage());
+            });
+        }
+
+        // Validacion condicional: direccion requerida solo si es envio
         if ("envio".equals(pedido.getTipoEntrega()) &&
             (pedido.getDireccion() == null || pedido.getDireccion().trim().isEmpty()))
             errores.put("direccion", "Ingresa tu direccion de envio.");
+
+        // Validacion condicional: campos de tarjeta
+        if ("tarjeta".equals(pedido.getMetodoPago())) {
+            String numTarjeta = pedido.getNumeroTarjeta() != null
+                    ? pedido.getNumeroTarjeta().replaceAll("\\s", "") : "";
+            if (!numTarjeta.matches("[0-9]{16}"))
+                errores.put("numeroTarjeta", "El numero de tarjeta debe tener 16 digitos.");
+            if (pedido.getCvv() == null || !pedido.getCvv().matches("[0-9]{3,4}"))
+                errores.put("cvv", "El CVV debe tener 3 o 4 digitos.");
+            if (pedido.getVencimiento() == null || !pedido.getVencimiento().matches("(0[1-9]|1[0-2])/[0-9]{2}"))
+                errores.put("vencimiento", "Formato invalido. Usa MM/AA (ej: 08/27).");
+            if (pedido.getTitular() == null || pedido.getTitular().trim().length() < 3)
+                errores.put("titular", "Ingresa el nombre del titular de la tarjeta.");
+        }
+
+        // Verificar stock disponible
+        for (CarritoItem item : carritoService.obtenerItems()) {
+            Producto p = productoService.obtenerProductoPorId(item.getProductoId());
+            if (p != null && p.getStock() < item.getCantidad()) {
+                errores.put("stock", "Stock insuficiente para \"" + p.getNombre() +
+                        "\" (disponible: " + p.getStock() + ")");
+                break;
+            }
+        }
 
         if (!errores.isEmpty()) {
             model.addAttribute("items", carritoService.obtenerItems());
@@ -174,6 +208,11 @@ public class CarritoController {
             carritoService.obtenerTotal(),
             carritoService.getCodigoAplicado()
         );
+
+        // Reducir stock de cada producto
+        for (CarritoItem item : pedido.getItems()) {
+            productoService.reducirStock(item.getProductoId(), item.getCantidad());
+        }
 
         model.addAttribute("pedido", pedido);
         model.addAttribute("carritoCount", 0);

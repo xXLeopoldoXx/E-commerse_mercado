@@ -61,4 +61,8 @@ public class PedidoService {
     public List<PedidoEntity> obtenerPorEmail(String email) {
         return pedidoRepository.findByEmailClienteOrderByFechaPedidoDesc(email);
     }
+
+    public double calcularIngresoTotal() {
+        return pedidoRepository.sumTotalRevenue();
+    }
 }

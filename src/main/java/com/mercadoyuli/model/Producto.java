@@ -1,6 +1,7 @@
 package com.mercadoyuli.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "productos")
@@ -10,13 +11,26 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El nombre del producto es obligatorio")
+    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
     private String nombre;
+
+    @NotBlank(message = "La descripcion es obligatoria")
     private String descripcion;
+
     private double precio;
+
+    @NotBlank(message = "El proveedor es obligatorio")
     private String proveedor;
+
+    @NotBlank(message = "La unidad es obligatoria")
     private String unidad;       // "kg", "unidad", "atado", "litro"
     private String imagenUrl;
     private boolean disponible;
+
+    @Min(value = 0, message = "El stock no puede ser negativo")
+    @Column(columnDefinition = "integer default 0")
+    private int stock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id")
@@ -64,4 +78,7 @@ public class Producto {
 
     public Categoria getCategoria() { return categoria; }
     public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
 }

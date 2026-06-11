@@ -42,6 +42,13 @@
                 <!-- Columna izquierda: formulario -->
                 <div class="col-lg-8">
 
+                    <!-- Error de stock -->
+                    <div th:if="${errores?.containsKey('stock')}"
+                         class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                        <span th:text="${errores.get('stock')}"></span>
+                    </div>
+
                     <!-- Datos del cliente -->
                     <div class="checkout-card">
                         <h5 class="checkout-card-title">
@@ -195,27 +202,43 @@
                         <div id="camposTarjeta" class="mt-4">
                             <div class="row g-3">
                                 <div class="col-md-8">
-                                    <label class="form-label fw-semibold">Numero de Tarjeta</label>
+                                    <label class="form-label fw-semibold">Numero de Tarjeta <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
                                         <input type="text" class="form-control my-input" name="numeroTarjeta"
-                                               placeholder="0000 0000 0000 0000" maxlength="19" id="inputTarjeta">
+                                               id="inputTarjeta" placeholder="0000 0000 0000 0000" maxlength="19"
+                                               th:value="${pedido?.numeroTarjeta}"
+                                               th:classappend="${errores?.containsKey('numeroTarjeta')} ? 'is-invalid' : ''">
                                     </div>
+                                    <div class="invalid-feedback d-block" style="font-size:.82rem"
+                                         th:text="${errores?.get('numeroTarjeta')}"></div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-semibold">CVV</label>
-                                    <input type="text" class="form-control my-input"
-                                           placeholder="123" maxlength="3">
+                                    <label class="form-label fw-semibold">CVV <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control my-input" name="cvv" id="inputCvv"
+                                           placeholder="123" maxlength="4"
+                                           th:value="${pedido?.cvv}"
+                                           th:classappend="${errores?.containsKey('cvv')} ? 'is-invalid' : ''">
+                                    <div class="invalid-feedback d-block" style="font-size:.82rem"
+                                         th:text="${errores?.get('cvv')}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Vencimiento</label>
-                                    <input type="text" class="form-control my-input"
-                                           placeholder="MM/AA" maxlength="5">
+                                    <label class="form-label fw-semibold">Vencimiento <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control my-input" name="vencimiento" id="inputVenc"
+                                           placeholder="MM/AA" maxlength="5"
+                                           th:value="${pedido?.vencimiento}"
+                                           th:classappend="${errores?.containsKey('vencimiento')} ? 'is-invalid' : ''">
+                                    <div class="invalid-feedback d-block" style="font-size:.82rem"
+                                         th:text="${errores?.get('vencimiento')}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Titular</label>
-                                    <input type="text" class="form-control my-input"
-                                           placeholder="Nombre en la tarjeta">
+                                    <label class="form-label fw-semibold">Titular <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control my-input" name="titular" id="inputTitular"
+                                           placeholder="Nombre en la tarjeta"
+                                           th:value="${pedido?.titular}"
+                                           th:classappend="${errores?.containsKey('titular')} ? 'is-invalid' : ''">
+                                    <div class="invalid-feedback d-block" style="font-size:.82rem"
+                                         th:text="${errores?.get('titular')}"></div>
                                 </div>
                             </div>
                         </div>
@@ -369,6 +392,38 @@
             if (!dir.value.trim()) {
                 dir.classList.add('is-invalid');
                 document.getElementById('errorChkDireccion').textContent = 'Ingresa tu direccion de envio.';
+                valid = false;
+            }
+        }
+
+        // Tarjeta (solo si metodo pago es tarjeta)
+        const metodoPago = this.querySelector('input[name="metodoPago"]:checked').value;
+        if (metodoPago === 'tarjeta') {
+            const numTarjeta = document.getElementById('inputTarjeta');
+            const cvv        = document.getElementById('inputCvv');
+            const venc       = document.getElementById('inputVenc');
+            const titular    = document.getElementById('inputTitular');
+
+            const digitos = numTarjeta.value.replace(/\s/g, '');
+            if (!digitos.match(/^[0-9]{16}$/)) {
+                numTarjeta.classList.add('is-invalid');
+                numTarjeta.nextElementSibling?.remove();
+                const err = document.createElement('div');
+                err.className = 'invalid-feedback d-block'; err.style.fontSize = '.82rem';
+                err.textContent = 'El numero de tarjeta debe tener 16 digitos.';
+                numTarjeta.parentElement.after(err);
+                valid = false;
+            }
+            if (!cvv.value.match(/^[0-9]{3,4}$/)) {
+                cvv.classList.add('is-invalid');
+                valid = false;
+            }
+            if (!venc.value.match(/^(0[1-9]|1[0-2])\/[0-9]{2}$/)) {
+                venc.classList.add('is-invalid');
+                valid = false;
+            }
+            if (!titular.value.trim() || titular.value.trim().length < 3) {
+                titular.classList.add('is-invalid');
                 valid = false;
             }
         }

@@ -47,4 +47,16 @@ public class UsuarioService {
     public boolean existsByEmail(String email) {
         return usuarioRepository.existsByEmail(email);
     }
+
+    public Optional<Usuario> loginAdmin(String email, String password) {
+        Optional<Usuario> opt = login(email, password);
+        if (opt.isPresent() && "ADMIN".equals(opt.get().getRol())) {
+            return opt;
+        }
+        return Optional.empty();
+    }
+
+    public long contarUsuarios() {
+        return usuarioRepository.count();
+    }
 }

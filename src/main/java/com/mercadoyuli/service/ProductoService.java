@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,10 @@ public class ProductoService {
 
     @PostConstruct
     public void init() {
-        if (categoriaRepository.count() > 0) return; // Ya inicializado
+        if (categoriaRepository.count() > 0) {
+            actualizarStockInicial();
+            return;
+        }
 
         Categoria carnes = guardarCat("Carnes", "carnes",
                 "Cortes frescos de res, pollo, cerdo y mas.", "bi-egg-fried", "/images/cat-carnes.jpg");
@@ -77,6 +81,8 @@ public class ProductoService {
         guardarProd("Jugo de Papaya","Jugo de papaya con miel 500ml.",5.50,"Jugueria Salud Total","vaso","/images/jugoPapaya.png",juguerias);
         guardarProd("Jugo Surtido","Mezcla de frutas de temporada 500ml.",6.50,"Jugueria La Vida","vaso","/images/jugoSurtido.png",juguerias);
         guardarProd("Emoliente","Emoliente caliente tradicional.",3.00,"Jugueria Salud Total","vaso","/images/emoliente.png",juguerias);
+
+        actualizarStockInicial();
     }
 
     private Categoria guardarCat(String nombre, String slug, String desc, String icono, String img) {
@@ -127,5 +133,50 @@ public class ProductoService {
     public List<Producto> buscarProductos(String query) {
         return productoRepository
                 .findByNombreContainingIgnoreCaseOrProveedorContainingIgnoreCase(query, query);
+    }
+
+    public List<Producto> obtenerTodosLosProductos() {
+        return productoRepository.findAll();
+    }
+
+    public Producto guardarProducto(Producto producto) {
+        return productoRepository.save(producto);
+    }
+
+    public void eliminarProducto(Long id) {
+        productoRepository.deleteById(id);
+    }
+
+    public com.mercadoyuli.model.Categoria obtenerCategoriaPorId(Long id) {
+        return categoriaRepository.findById(id).orElse(null);
+    }
+
+    private void actualizarStockInicial() {
+        List<Producto> todos = productoRepository.findAll();
+        if (todos.isEmpty() || todos.stream().anyMatch(p -> p.getStock() > 0)) return;
+        int[] stocks = {45, 30, 20, 8, 40, 25,
+                        60, 80, 70, 55, 35, 40,
+                        50, 25, 30, 60, 40, 35,
+                        100, 80, 150, 200, 90, 60,
+                        40, 50, 5, 40, 45, 55, 60};
+        for (int i = 0; i < todos.size(); i++) {
+            todos.get(i).setStock(stocks[Math.min(i, stocks.length - 1)]);
+            productoRepository.save(todos.get(i));
+        }
+    }
+
+    public void reducirStock(Long productoId, int cantidad) {
+        Producto p = obtenerProductoPorId(productoId);
+        if (p != null) {
+            p.setStock(Math.max(0, p.getStock() - cantidad));
+            productoRepository.save(p);
+        }
+    }
+
+    public List<Producto> obtenerProductosBajoStock(int umbral) {
+        return productoRepository.findAll().stream()
+                .filter(p -> p.getStock() <= umbral)
+                .sorted(Comparator.comparingInt(Producto::getStock))
+                .collect(Collectors.toList());
     }
 }
