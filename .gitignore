@@ -34,3 +34,6 @@ build/
 
 ### Mac ###
 .DS_Store
+
+### Secretos locales (NO subir) ###
+secrets.properties
