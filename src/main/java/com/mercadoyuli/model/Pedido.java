@@ -16,6 +16,8 @@ public class Pedido {
     private String direccion;
     private String distrito;
     private String referencia;
+    private String latitud;      // coordenadas marcadas en el mapa
+    private String longitud;
 
     // Pago
     private String metodoPago;   // "tarjeta", "yape", "pago_local"
@@ -56,6 +58,12 @@ public class Pedido {
 
     public String getReferencia() { return referencia; }
     public void setReferencia(String referencia) { this.referencia = referencia; }
+
+    public String getLatitud() { return latitud; }
+    public void setLatitud(String latitud) { this.latitud = latitud; }
+
+    public String getLongitud() { return longitud; }
+    public void setLongitud(String longitud) { this.longitud = longitud; }
 
     public String getMetodoPago() { return metodoPago; }
     public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }

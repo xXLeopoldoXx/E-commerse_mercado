@@ -32,6 +32,8 @@ public class PedidoEntity {
 
     private String direccion;
     private String distrito;
+    private String latitud;
+    private String longitud;
 
     @Column(name = "metodo_pago")
     private String metodoPago;
@@ -81,6 +83,12 @@ public class PedidoEntity {
 
     public String getDistrito() { return distrito; }
     public void setDistrito(String distrito) { this.distrito = distrito; }
+
+    public String getLatitud() { return latitud; }
+    public void setLatitud(String latitud) { this.latitud = latitud; }
+
+    public String getLongitud() { return longitud; }
+    public void setLongitud(String longitud) { this.longitud = longitud; }
 
     public String getMetodoPago() { return metodoPago; }
     public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }

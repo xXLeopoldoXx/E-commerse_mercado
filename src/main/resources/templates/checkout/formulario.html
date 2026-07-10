@@ -155,6 +155,27 @@
                                     <input type="text" class="form-control my-input" name="referencia"
                                            placeholder="Cerca del parque, frente a la bodega...">
                                 </div>
+
+                                <!-- Mapa interactivo para marcar la direccion -->
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-pin-map-fill me-1"></i>Ubica tu direccion en el mapa
+                                    </label>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                        <input type="text" class="form-control my-input" id="buscarMapa"
+                                               placeholder="Escribe una calle o zona y presiona Buscar">
+                                        <button type="button" class="btn btn-outline-secondary" id="btnBuscarMapa">
+                                            <i class="bi bi-geo-alt"></i> Buscar
+                                        </button>
+                                    </div>
+                                    <div id="mapa" style="height:320px; border-radius:12px; overflow:hidden; border:1px solid #dcdcdc; z-index:0;"></div>
+                                    <small class="text-muted d-block mt-2">
+                                        <i class="bi bi-info-circle me-1"></i>Haz clic en el mapa o arrastra el pin sobre tu casa. La direccion se completa sola.
+                                    </small>
+                                    <input type="hidden" name="latitud"  id="inputLat" th:value="${pedido?.latitud}">
+                                    <input type="hidden" name="longitud" id="inputLng" th:value="${pedido?.longitud}">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -293,6 +314,10 @@
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/modals :: modals}"></div>
 
+<!-- Leaflet (mapa gratuito con OpenStreetMap) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/main.js}"></script>
 <script>
@@ -301,6 +326,10 @@
         radio.addEventListener('change', function() {
             const campos = document.getElementById('camposEnvio');
             campos.style.display = this.value === 'envio' ? 'block' : 'none';
+            // Leaflet necesita recalcular su tamano al volver a mostrarse
+            if (this.value === 'envio' && window._mapaYuli) {
+                setTimeout(() => window._mapaYuli.invalidateSize(), 200);
+            }
         });
     });
 
@@ -324,6 +353,91 @@
     }
     // La validacion de los datos del pedido se realiza en el servidor
     // con Spring Validator; los errores se muestran junto a cada campo.
+
+    // ===== Mapa interactivo (Leaflet + OpenStreetMap, gratuito) =====
+    (function initMapa() {
+        const cont = document.getElementById('mapa');
+        if (!cont || typeof L === 'undefined') return;
+
+        const inputLat = document.getElementById('inputLat');
+        const inputLng = document.getElementById('inputLng');
+        const inputDir = document.getElementById('inputDireccion');
+
+        // Centro por defecto: Ate Vitarte, Lima
+        const centroDefecto = [-12.0433, -76.9186];
+        const latPrev = parseFloat(inputLat.value);
+        const lngPrev = parseFloat(inputLng.value);
+        const tienePrev = !isNaN(latPrev) && !isNaN(lngPrev);
+        const inicio = tienePrev ? [latPrev, lngPrev] : centroDefecto;
+
+        const map = L.map('mapa').setView(inicio, 15);
+        window._mapaYuli = map;
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        const marker = L.marker(inicio, { draggable: true }).addTo(map);
+
+        function guardarCoords(lat, lng) {
+            inputLat.value = lat.toFixed(6);
+            inputLng.value = lng.toFixed(6);
+        }
+
+        // Geocodificacion inversa: coordenadas -> direccion (Nominatim, gratis)
+        function autocompletarDireccion(lat, lng) {
+            fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=es&lat='
+                    + lat + '&lon=' + lng)
+                .then(r => r.json())
+                .then(d => {
+                    if (d && d.display_name) {
+                        inputDir.value = d.display_name;
+                        inputDir.classList.remove('is-invalid');
+                    }
+                }).catch(() => {});
+        }
+
+        function marcar(lat, lng, geocode) {
+            marker.setLatLng([lat, lng]);
+            guardarCoords(lat, lng);
+            if (geocode) autocompletarDireccion(lat, lng);
+        }
+
+        map.on('click', e => marcar(e.latlng.lat, e.latlng.lng, true));
+        marker.on('dragend', () => {
+            const p = marker.getLatLng();
+            marcar(p.lat, p.lng, true);
+        });
+
+        // Buscar direccion -> centra el mapa (geocodificacion directa)
+        const btnBuscar = document.getElementById('btnBuscarMapa');
+        const inputBuscar = document.getElementById('buscarMapa');
+        function buscar() {
+            const q = inputBuscar.value.trim();
+            if (!q) return;
+            fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=pe&limit=1&accept-language=es&q='
+                    + encodeURIComponent(q))
+                .then(r => r.json())
+                .then(res => {
+                    if (res && res.length) {
+                        const lat = parseFloat(res[0].lat), lng = parseFloat(res[0].lon);
+                        map.setView([lat, lng], 17);
+                        marcar(lat, lng, false);
+                        inputDir.value = res[0].display_name;
+                        inputDir.classList.remove('is-invalid');
+                    } else {
+                        alert('No se encontro esa direccion. Intenta con mas detalle.');
+                    }
+                }).catch(() => {});
+        }
+        btnBuscar.addEventListener('click', buscar);
+        inputBuscar.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); buscar(); }
+        });
+
+        // Recalcular tamano tras el render inicial
+        setTimeout(() => map.invalidateSize(), 300);
+    })();
 </script>
 </body>
 </html>

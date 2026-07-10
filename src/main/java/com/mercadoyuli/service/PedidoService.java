@@ -31,6 +31,8 @@ public class PedidoService {
         entity.setTipoEntrega(pedido.getTipoEntrega());
         entity.setDireccion(pedido.getDireccion());
         entity.setDistrito(pedido.getDistrito());
+        entity.setLatitud(pedido.getLatitud());
+        entity.setLongitud(pedido.getLongitud());
         entity.setMetodoPago(pedido.getMetodoPago());
         entity.setSubtotal(subtotal);
         entity.setDescuento(descuento);

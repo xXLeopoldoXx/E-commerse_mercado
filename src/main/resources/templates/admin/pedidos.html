@@ -59,6 +59,11 @@
                                 <small class="text-muted" style="font-size:.72rem;"
                                        th:if="${p.distrito != null}"
                                        th:text="${', ' + p.distrito}"></small>
+                                <a th:if="${p.latitud != null and p.longitud != null}"
+                                   th:href="'https://www.openstreetmap.org/?mlat=' + ${p.latitud} + '&mlon=' + ${p.longitud} + '#map=17/' + ${p.latitud} + '/' + ${p.longitud}"
+                                   target="_blank" class="d-block mt-1" style="font-size:.72rem;">
+                                    <i class="bi bi-geo-alt-fill text-danger"></i> Ver en mapa
+                                </a>
                             </td>
                             <td>
                                 <span th:class="${p.metodoPago == 'tarjeta'} ? 'badge bg-primary' :
