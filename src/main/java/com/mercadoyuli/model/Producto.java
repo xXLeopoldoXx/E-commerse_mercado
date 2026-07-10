@@ -18,6 +18,9 @@ public class Producto {
     private String imagenUrl;
     private boolean disponible;
 
+    @Column(columnDefinition = "integer default 0")
+    private int stock;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
@@ -64,4 +67,7 @@ public class Producto {
 
     public Categoria getCategoria() { return categoria; }
     public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
 }

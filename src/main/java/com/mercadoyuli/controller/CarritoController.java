@@ -1,17 +1,26 @@
 package com.mercadoyuli.controller;
 
 import com.mercadoyuli.model.Pedido;
+import com.mercadoyuli.model.PedidoEntity;
+import com.mercadoyuli.model.Usuario;
+import com.mercadoyuli.service.PedidoService;
 import com.mercadoyuli.model.Producto;
+import jakarta.servlet.http.HttpSession;
 import com.mercadoyuli.service.CarritoService;
 import com.mercadoyuli.service.ProductoService;
+import com.mercadoyuli.validator.PedidoValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -19,10 +28,15 @@ public class CarritoController {
 
     private final CarritoService carritoService;
     private final ProductoService productoService;
+    private final PedidoService pedidoService;
+    private final PedidoValidator pedidoValidator;
 
-    public CarritoController(CarritoService carritoService, ProductoService productoService) {
+    public CarritoController(CarritoService carritoService, ProductoService productoService,
+                             PedidoService pedidoService, PedidoValidator pedidoValidator) {
         this.carritoService = carritoService;
         this.productoService = productoService;
+        this.pedidoService = pedidoService;
+        this.pedidoValidator = pedidoValidator;
     }
 
     @PostMapping("/carrito/agregar")
@@ -95,7 +109,7 @@ public class CarritoController {
     }
 
     @GetMapping("/checkout")
-    public String checkout(Model model) {
+    public String checkout(Model model, HttpSession session) {
         if (carritoService.estaVacio()) {
             return "redirect:/carrito";
         }
@@ -106,28 +120,33 @@ public class CarritoController {
         model.addAttribute("codigoAplicado", carritoService.getCodigoAplicado());
         model.addAttribute("carritoCount", carritoService.obtenerCantidadTotal());
         model.addAttribute("categorias", productoService.obtenerCategorias());
-        model.addAttribute("pedido", new Pedido());
+
+        // Pre-cargar los datos del usuario logueado (si lo hay)
+        Pedido pedido = new Pedido();
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+        if (usuario != null) {
+            pedido.setNombreCliente(usuario.getNombre());
+            pedido.setDni(usuario.getDni());
+            pedido.setEmailCliente(usuario.getEmail());
+            pedido.setTelefonoCliente(usuario.getTelefono());
+            pedido.setDireccion(usuario.getDireccion());
+        }
+        model.addAttribute("pedido", pedido);
         return "checkout/formulario";
     }
 
     @PostMapping("/checkout/confirmar")
     public String confirmarPedido(@ModelAttribute Pedido pedido, Model model) {
-        // Validar campos obligatorios del lado del servidor
-        java.util.Map<String, String> errores = new java.util.HashMap<>();
+        // Validacion del lado del servidor con el Spring Validator
+        BindingResult binding = new BeanPropertyBindingResult(pedido, "pedido");
+        pedidoValidator.validate(pedido, binding);
 
-        if (pedido.getNombreCliente() == null || pedido.getNombreCliente().trim().length() < 3)
-            errores.put("nombre", "Ingresa tu nombre completo.");
-        if (pedido.getDni() == null || !pedido.getDni().matches("[0-9]{8}"))
-            errores.put("dni", "El DNI debe tener exactamente 8 digitos.");
-        if (pedido.getEmailCliente() == null || !pedido.getEmailCliente().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"))
-            errores.put("email", "Ingresa un correo electronico valido.");
-        if (pedido.getTelefonoCliente() == null || !pedido.getTelefonoCliente().matches("[0-9]{9}"))
-            errores.put("telefono", "El telefono debe tener 9 digitos.");
-        if ("envio".equals(pedido.getTipoEntrega()) &&
-            (pedido.getDireccion() == null || pedido.getDireccion().trim().isEmpty()))
-            errores.put("direccion", "Ingresa tu direccion de envio.");
+        if (binding.hasErrors()) {
+            // Traducir los errores del Spring Validator a las claves que usa la plantilla
+            Map<String, String> errores = new HashMap<>();
+            binding.getFieldErrors().forEach(fe -> errores.putIfAbsent(
+                    mapearCampo(fe.getField()), fe.getDefaultMessage()));
 
-        if (!errores.isEmpty()) {
             model.addAttribute("items", carritoService.obtenerItems());
             model.addAttribute("subtotal", carritoService.obtenerSubtotal());
             model.addAttribute("descuento", carritoService.obtenerDescuento());
@@ -149,6 +168,20 @@ public class CarritoController {
         pedido.setItems(new ArrayList<>(carritoService.obtenerItems()));
         pedido.setTotal(carritoService.obtenerTotal());
 
+        // Guardar pedido en base de datos PostgreSQL
+        pedidoService.guardarPedido(
+            pedido,
+            carritoService.obtenerItems(),
+            carritoService.obtenerSubtotal(),
+            carritoService.obtenerDescuento(),
+            carritoService.obtenerTotal(),
+            carritoService.getCodigoAplicado()
+        );
+
+        // Descontar stock de cada producto comprado (se refleja en el panel admin)
+        carritoService.obtenerItems().forEach(item ->
+                productoService.reducirStock(item.getProductoId(), item.getCantidad()));
+
         model.addAttribute("pedido", pedido);
         model.addAttribute("carritoCount", 0);
         model.addAttribute("categorias", productoService.obtenerCategorias());
@@ -157,5 +190,15 @@ public class CarritoController {
         carritoService.vaciarCarrito();
 
         return "checkout/confirmacion";
+    }
+
+    // Traduce el nombre del campo del modelo Pedido a la clave usada en la plantilla
+    private String mapearCampo(String campo) {
+        return switch (campo) {
+            case "nombreCliente"   -> "nombre";
+            case "emailCliente"    -> "email";
+            case "telefonoCliente" -> "telefono";
+            default                -> campo; // dni, direccion
+        };
     }
 }

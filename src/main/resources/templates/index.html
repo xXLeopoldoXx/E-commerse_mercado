@@ -445,5 +445,33 @@
         new bootstrap.Toast(document.getElementById('toastCarrito')).show();
     });
 </script>
+
+<!-- Registro exitoso -->
+<script th:if="${mensajeRegistro}" th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('mensajeExito').textContent = /*[[${mensajeRegistro}]]*/ '';
+        new bootstrap.Modal(document.getElementById('exitoModal')).show();
+    });
+</script>
+
+<!-- Login exitoso -->
+<script th:if="${mensajeLogin}" th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('mensajeExito').textContent = /*[[${mensajeLogin}]]*/ '';
+        new bootstrap.Modal(document.getElementById('exitoModal')).show();
+    });
+</script>
+
+<!-- Errores de validacion (Spring Validator): se muestran inline y se reabre el modal -->
+<script th:if="${erroresRegistro}">
+    document.addEventListener('DOMContentLoaded', function () {
+        new bootstrap.Modal(document.getElementById('registerModal')).show();
+    });
+</script>
+<script th:if="${erroresLogin}">
+    document.addEventListener('DOMContentLoaded', function () {
+        new bootstrap.Modal(document.getElementById('loginModal')).show();
+    });
+</script>
 </body>
 </html>

@@ -90,7 +90,6 @@ public class CarritoService {
     }
 
     public String getCodigoAplicado() { return codigoAplicado; }
-    public boolean tieneDescuento() { return codigoAplicado != null; }
 
     public void vaciarCarrito() {
         items.clear();

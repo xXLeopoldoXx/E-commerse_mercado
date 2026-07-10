@@ -15,22 +15,25 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <form id="loginForm" novalidate>
+                    <form id="loginForm" th:action="@{/login}" method="post" novalidate>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Correo Electronico</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" class="form-control my-input" id="loginEmail" placeholder="tu@correo.com">
+                                <input type="email" class="form-control my-input" id="loginEmail" name="email" placeholder="tu@correo.com"
+                                       th:value="${loginEmailValue}"
+                                       th:classappend="${erroresLogin?.containsKey('email')} ? 'is-invalid' : ''">
                             </div>
-                            <div id="errorLoginEmail" class="invalid-feedback d-block"></div>
+                            <div id="errorLoginEmail" class="invalid-feedback d-block" th:text="${erroresLogin?.get('email')}"></div>
                         </div>
                         <div class="mb-4">
                             <label class="form-label fw-semibold">Contrasena</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                <input type="password" class="form-control my-input" id="loginPassword" placeholder="Tu contrasena">
+                                <input type="password" class="form-control my-input" id="loginPassword" name="password" placeholder="Tu contrasena"
+                                       th:classappend="${erroresLogin?.containsKey('password')} ? 'is-invalid' : ''">
                             </div>
-                            <div id="errorLoginPassword" class="invalid-feedback d-block"></div>
+                            <div id="errorLoginPassword" class="invalid-feedback d-block" th:text="${erroresLogin?.get('password')}"></div>
                         </div>
                         <button type="submit" class="btn btn-primary-custom w-100">
                             <i class="bi bi-box-arrow-in-right me-2"></i>Ingresar
@@ -58,54 +61,69 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <form id="registerForm" novalidate>
+                    <form id="registerForm" th:action="@{/registro}" method="post" novalidate>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">DNI <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                    <input type="text" class="form-control my-input" id="regDni" placeholder="Ej: 12345678" maxlength="8">
+                                    <input type="text" class="form-control my-input" id="regDni" name="dni" placeholder="Ej: 12345678" maxlength="8"
+                                           th:value="${usuarioForm?.dni}"
+                                           th:classappend="${erroresRegistro?.containsKey('dni')} ? 'is-invalid' : ''">
                                 </div>
-                                <div id="errorRegDni" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                                <div id="errorRegDni" class="invalid-feedback d-block" style="font-size:0.82rem"
+                                     th:text="${erroresRegistro?.get('dni')}"></div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Telefono <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                    <input type="tel" class="form-control my-input" id="regTelefono" placeholder="Ej: 987654321" maxlength="9">
+                                    <input type="tel" class="form-control my-input" id="regTelefono" name="telefono" placeholder="Ej: 987654321" maxlength="9"
+                                           th:value="${usuarioForm?.telefono}"
+                                           th:classappend="${erroresRegistro?.containsKey('telefono')} ? 'is-invalid' : ''">
                                 </div>
-                                <div id="errorRegTelefono" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                                <div id="errorRegTelefono" class="invalid-feedback d-block" style="font-size:0.82rem"
+                                     th:text="${erroresRegistro?.get('telefono')}"></div>
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                    <input type="text" class="form-control my-input" id="regNombre" placeholder="Ej: Maria Elena Garcia Quispe">
+                                    <input type="text" class="form-control my-input" id="regNombre" name="nombre" placeholder="Ej: Maria Elena Garcia Quispe"
+                                           th:value="${usuarioForm?.nombre}"
+                                           th:classappend="${erroresRegistro?.containsKey('nombre')} ? 'is-invalid' : ''">
                                 </div>
-                                <div id="errorRegNombre" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                                <div id="errorRegNombre" class="invalid-feedback d-block" style="font-size:0.82rem"
+                                     th:text="${erroresRegistro?.get('nombre')}"></div>
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Direccion</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                                    <input type="text" class="form-control my-input" id="regDireccion" placeholder="Ej: Av. Juan de Dios 153, Ate Vitarte">
+                                    <input type="text" class="form-control my-input" id="regDireccion" name="direccion" placeholder="Ej: Av. Juan de Dios 153, Ate Vitarte"
+                                           th:value="${usuarioForm?.direccion}">
                                 </div>
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Correo Electronico <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                    <input type="email" class="form-control my-input" id="regEmail" placeholder="usuario@correo.com">
+                                    <input type="email" class="form-control my-input" id="regEmail" name="email" placeholder="usuario@correo.com"
+                                           th:value="${usuarioForm?.email}"
+                                           th:classappend="${erroresRegistro?.containsKey('email')} ? 'is-invalid' : ''">
                                 </div>
-                                <div id="errorRegEmail" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                                <div id="errorRegEmail" class="invalid-feedback d-block" style="font-size:0.82rem"
+                                     th:text="${erroresRegistro?.get('email')}"></div>
                             </div>
                             <div class="col-12 mb-2">
                                 <label class="form-label fw-semibold">Contrasena <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                    <input type="password" class="form-control my-input" id="regPassword" placeholder="Minimo 8 caracteres">
+                                    <input type="password" class="form-control my-input" id="regPassword" name="password" placeholder="Minimo 8 caracteres"
+                                           th:classappend="${erroresRegistro?.containsKey('password')} ? 'is-invalid' : ''">
                                 </div>
-                                <div id="errorRegPassword" class="invalid-feedback d-block" style="font-size:0.82rem"></div>
+                                <div id="errorRegPassword" class="invalid-feedback d-block" style="font-size:0.82rem"
+                                     th:text="${erroresRegistro?.get('password')}"></div>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary-custom w-100 mt-2">

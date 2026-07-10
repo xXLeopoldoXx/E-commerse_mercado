@@ -133,8 +133,12 @@
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
                                         <input type="text" class="form-control my-input" name="direccion"
-                                               placeholder="Av. Principal 123, Dpto 4B" id="inputDireccion">
+                                               placeholder="Av. Principal 123, Dpto 4B" id="inputDireccion"
+                                               th:value="${pedido?.direccion}"
+                                               th:classappend="${errores?.containsKey('direccion')} ? 'is-invalid' : ''">
                                     </div>
+                                    <div id="errorChkDireccion" class="invalid-feedback d-block" style="font-size:0.82rem"
+                                         th:text="${errores?.get('direccion')}"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Distrito</label>
@@ -318,66 +322,8 @@
             this.value = formatted;
         });
     }
-
-    // Validacion del formulario con mensajes inline
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-        const nombre   = document.getElementById('chkNombre');
-        const dni      = document.getElementById('chkDni');
-        const email    = document.getElementById('chkEmail');
-        const telefono = document.getElementById('chkTelefono');
-        let valid = true;
-
-        // Reset todos los errores
-        this.querySelectorAll('.my-input').forEach(el => el.classList.remove('is-invalid'));
-        ['errorChkNombre','errorChkDni','errorChkEmail','errorChkTelefono','errorChkDireccion']
-            .forEach(id => { const el = document.getElementById(id); if(el) el.textContent = ''; });
-
-        // Nombre
-        if (!nombre.value.trim() || nombre.value.trim().length < 3) {
-            nombre.classList.add('is-invalid');
-            document.getElementById('errorChkNombre').textContent = 'Ingresa tu nombre completo.';
-            valid = false;
-        }
-
-        // DNI
-        if (!dni.value.match(/^[0-9]{8}$/)) {
-            dni.classList.add('is-invalid');
-            document.getElementById('errorChkDni').textContent = 'El DNI debe tener exactamente 8 digitos.';
-            valid = false;
-        }
-
-        // Email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email.value)) {
-            email.classList.add('is-invalid');
-            document.getElementById('errorChkEmail').textContent = 'Ingresa un correo electronico valido.';
-            valid = false;
-        }
-
-        // Telefono
-        if (!telefono.value.match(/^[0-9]{9}$/)) {
-            telefono.classList.add('is-invalid');
-            document.getElementById('errorChkTelefono').textContent = 'El telefono debe tener 9 digitos.';
-            valid = false;
-        }
-
-        // Direccion (solo si es envio)
-        const tipoEntrega = this.querySelector('input[name="tipoEntrega"]:checked').value;
-        if (tipoEntrega === 'envio') {
-            const dir = document.getElementById('inputDireccion');
-            if (!dir.value.trim()) {
-                dir.classList.add('is-invalid');
-                document.getElementById('errorChkDireccion').textContent = 'Ingresa tu direccion de envio.';
-                valid = false;
-            }
-        }
-
-        if (!valid) {
-            e.preventDefault();
-            const firstError = this.querySelector('.is-invalid');
-            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    });
+    // La validacion de los datos del pedido se realiza en el servidor
+    // con Spring Validator; los errores se muestran junto a cada campo.
 </script>
 </body>
 </html>

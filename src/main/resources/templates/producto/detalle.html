@@ -57,6 +57,21 @@
                               th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">S/ 0.00</span>
                     </div>
 
+                    <!-- Stock badge -->
+                    <div class="mt-3">
+                        <span th:if="${producto.stock == 0}" class="badge bg-danger fs-6 px-3 py-2">
+                            <i class="bi bi-x-circle me-1"></i>Sin stock
+                        </span>
+                        <span th:if="${producto.stock > 0 and producto.stock <= 10}"
+                              class="badge bg-warning text-dark fs-6 px-3 py-2">
+                            <i class="bi bi-exclamation-triangle me-1"></i>Pocas unidades — <span th:text="${producto.stock}"></span> disponibles
+                        </span>
+                        <span th:if="${producto.stock > 10}"
+                              class="badge bg-success fs-6 px-3 py-2">
+                            <i class="bi bi-check-circle me-1"></i>En stock — <span th:text="${producto.stock}"></span> disponibles
+                        </span>
+                    </div>
+
                     <!-- Agregar al carrito -->
                     <form th:action="@{/carrito/agregar}" method="post" class="mt-4">
                         <input type="hidden" name="productoId" th:value="${producto.id}">
@@ -66,13 +81,16 @@
                                     <i class="bi bi-dash"></i>
                                 </button>
                                 <input type="number" name="cantidad" id="cantidadInput"
-                                       value="1" min="1" max="99" class="qty-input" readonly>
+                                       value="1" min="1" th:max="${producto.stock > 0 ? producto.stock : 1}"
+                                       class="qty-input" readonly>
                                 <button type="button" class="btn btn-qty" onclick="cambiarCantidad(1)">
                                     <i class="bi bi-plus"></i>
                                 </button>
                             </div>
-                            <button type="submit" class="btn btn-agregar-carrito flex-grow-1">
-                                <i class="bi bi-cart-plus me-2"></i>Agregar al carrito
+                            <button type="submit" class="btn btn-agregar-carrito flex-grow-1"
+                                    th:disabled="${producto.stock == 0}">
+                                <i class="bi bi-cart-plus me-2"></i>
+                                <span th:text="${producto.stock == 0} ? 'Sin stock' : 'Agregar al carrito'">Agregar al carrito</span>
                             </button>
                         </div>
                     </form>
@@ -134,9 +152,10 @@
 <script>
     function cambiarCantidad(delta) {
         const input = document.getElementById('cantidadInput');
+        const maxStock = parseInt(input.max) || 99;
         let val = parseInt(input.value) + delta;
         if (val < 1) val = 1;
-        if (val > 99) val = 99;
+        if (val > maxStock) val = maxStock;
         input.value = val;
     }
 </script>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Admin - Pedidos')}"></head>
+<body style="background:#f4f6f8;">
+
+<nav th:replace="~{fragments/adminnav :: adminnav}"></nav>
+
+<div class="container-fluid py-4 px-4">
+
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="fw-bold mb-0"><i class="bi bi-receipt me-2 text-success"></i>Gestión de Pedidos</h4>
+            <small class="text-muted"
+                   th:text="${#lists.size(pedidos)} + ' pedido(s) registrado(s)'"></small>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background:#1a5c2a; color:white;">
+                        <tr>
+                            <th class="ps-3">Nro. Pedido</th>
+                            <th>Cliente</th>
+                            <th>Contacto</th>
+                            <th>Entrega</th>
+                            <th>Pago</th>
+                            <th>Subtotal</th>
+                            <th>Descuento</th>
+                            <th>Total</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${pedidos}">
+                            <td class="ps-3">
+                                <span class="font-monospace fw-semibold text-success small"
+                                      th:text="${p.numeroPedido}"></span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold small" th:text="${p.nombreCliente}"></div>
+                                <div class="text-muted" style="font-size:.75rem;"
+                                     th:text="'DNI: ' + ${p.dniCliente}"></div>
+                            </td>
+                            <td>
+                                <div class="small" th:text="${p.emailCliente}"></div>
+                                <div class="text-muted" style="font-size:.75rem;"
+                                     th:text="${p.telefonoCliente}"></div>
+                            </td>
+                            <td>
+                                <span th:if="${p.tipoEntrega == 'envio'}"
+                                      class="badge bg-info text-dark d-block mb-1">Envío</span>
+                                <span th:unless="${p.tipoEntrega == 'envio'}"
+                                      class="badge bg-light text-dark border d-block mb-1">Retiro</span>
+                                <small class="text-muted" style="font-size:.72rem;"
+                                       th:if="${p.direccion != null and !p.direccion.isEmpty()}"
+                                       th:text="${p.direccion}"></small>
+                                <small class="text-muted" style="font-size:.72rem;"
+                                       th:if="${p.distrito != null}"
+                                       th:text="${', ' + p.distrito}"></small>
+                            </td>
+                            <td>
+                                <span th:class="${p.metodoPago == 'tarjeta'} ? 'badge bg-primary' :
+                                                (${p.metodoPago == 'yape'} ? 'badge bg-warning text-dark' :
+                                                'badge bg-secondary')"
+                                      th:text="${p.metodoPago == 'tarjeta'} ? 'Tarjeta' :
+                                               (${p.metodoPago == 'yape'} ? 'Yape' : 'En Local')"></span>
+                            </td>
+                            <td class="small" th:text="'S/ ' + ${#numbers.formatDecimal(p.subtotal,1,2)}"></td>
+                            <td class="small text-danger"
+                                th:text="${p.descuento > 0} ? ('- S/ ' + ${#numbers.formatDecimal(p.descuento,1,2)}) : '—'"></td>
+                            <td class="fw-bold text-success"
+                                th:text="'S/ ' + ${#numbers.formatDecimal(p.total,1,2)}"></td>
+                            <td class="text-muted small"
+                                th:text="${#temporals.format(p.fechaPedido,'dd/MM/yyyy')}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(pedidos)}">
+                            <td colspan="9" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>No hay pedidos registrados.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white border-top text-muted small d-flex justify-content-between">
+            <span>
+                <strong th:text="${#lists.size(pedidos)}">0</strong> pedidos en total
+            </span>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -5,113 +5,14 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
-    // VALIDACION FORMULARIO LOGIN
+    // NOTA: la validacion de login y registro se realiza
+    // en el servidor con Spring Validator (Bean Validation).
+    // Aqui solo se limpian los mensajes al reabrir los modales.
     // ==========================================
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            let valido = true;
-
-            // Limpiar errores
-            limpiarErrores(loginForm);
-
-            // Validar email
-            const email = document.getElementById('loginEmail');
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!email.value.trim() || !emailRegex.test(email.value)) {
-                mostrarError(email, 'errorLoginEmail', 'Ingresa un correo electronico valido.');
-                valido = false;
-            }
-
-            // Validar contrasena
-            const password = document.getElementById('loginPassword');
-            if (!password.value || password.value.length < 6) {
-                mostrarError(password, 'errorLoginPassword', 'La contrasena debe tener al menos 6 caracteres.');
-                valido = false;
-            }
-
-            if (valido) {
-                // Simular login exitoso
-                document.getElementById('mensajeExito').textContent = 'Bienvenido a Mercado Yuli!';
-                const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-                if (loginModal) loginModal.hide();
-                setTimeout(() => {
-                    new bootstrap.Modal(document.getElementById('exitoModal')).show();
-                }, 300);
-            }
-        });
-    }
 
     // ==========================================
-    // VALIDACION FORMULARIO REGISTRO
+    // HELPER: LIMPIAR ERRORES INLINE
     // ==========================================
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-        registerForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            let valido = true;
-
-            limpiarErrores(registerForm);
-
-            // Validar DNI
-            const dni = document.getElementById('regDni');
-            if (dni && (!dni.value.match(/^[0-9]{8}$/))) {
-                mostrarError(dni, 'errorRegDni', 'El DNI debe tener exactamente 8 digitos.');
-                valido = false;
-            }
-
-            // Validar telefono
-            const telefono = document.getElementById('regTelefono');
-            if (telefono && (!telefono.value.match(/^[0-9]{9}$/))) {
-                mostrarError(telefono, 'errorRegTelefono', 'El telefono debe tener 9 digitos.');
-                valido = false;
-            }
-
-            // Validar nombre
-            const nombre = document.getElementById('regNombre');
-            if (!nombre.value.trim() || nombre.value.trim().length < 3) {
-                mostrarError(nombre, 'errorRegNombre', 'Ingresa tu nombre completo (minimo 3 caracteres).');
-                valido = false;
-            }
-
-            // Validar email
-            const email = document.getElementById('regEmail');
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!email.value.trim() || !emailRegex.test(email.value)) {
-                mostrarError(email, 'errorRegEmail', 'Ingresa un correo electronico valido.');
-                valido = false;
-            }
-
-            // Validar contrasena: min 8 chars, mayuscula, minuscula, numero
-            const password = document.getElementById('regPassword');
-            const passRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
-            if (!passRegex.test(password.value)) {
-                mostrarError(password, 'errorRegPassword',
-                    'Minimo 8 caracteres, una mayuscula, una minuscula y un numero.');
-                valido = false;
-            }
-
-            if (valido) {
-                document.getElementById('mensajeExito').textContent = 'Cuenta creada exitosamente!';
-                const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
-                if (registerModal) registerModal.hide();
-                setTimeout(() => {
-                    new bootstrap.Modal(document.getElementById('exitoModal')).show();
-                }, 300);
-            }
-        });
-    }
-
-    // ==========================================
-    // HELPER: MOSTRAR ERROR INLINE
-    // ==========================================
-    function mostrarError(input, errorId, mensaje) {
-        input.classList.add('is-invalid');
-        const errorDiv = document.getElementById(errorId);
-        if (errorDiv) errorDiv.textContent = mensaje;
-    }
-
     function limpiarErrores(form) {
         form.querySelectorAll('.my-input').forEach(el => {
             el.classList.remove('is-invalid');

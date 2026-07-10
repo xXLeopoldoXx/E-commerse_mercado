@@ -12,7 +12,7 @@ public class Categoria {
     private Long id;
 
     private String nombre;
-    private String slug;         // ej: "carnes", "verduras"
+    private String slug;         
     private String descripcion;
     private String icono;        // clase Bootstrap Icon ej: "bi-egg-fried"
     private String imagenUrl;

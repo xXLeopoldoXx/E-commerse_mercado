@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Admin - Producto')}"></head>
+<body style="background:#f4f6f8;">
+
+<nav th:replace="~{fragments/adminnav :: adminnav}"></nav>
+
+<div class="container py-4" style="max-width:720px;">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/admin/productos}">Productos</a></li>
+            <li class="breadcrumb-item active"
+                th:text="${editando} ? 'Editar Producto' : 'Nuevo Producto'"></li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header py-3" style="background:#1a5c2a; color:white; border-radius:12px 12px 0 0;">
+            <h5 class="mb-0 fw-bold">
+                <i th:class="${editando} ? 'bi bi-pencil-square me-2' : 'bi bi-plus-circle me-2'"></i>
+                <span th:text="${editando} ? 'Editar Producto' : 'Nuevo Producto'"></span>
+            </h5>
+        </div>
+        <div class="card-body p-4">
+
+            <form th:action="${editando} ? @{/admin/productos/editar/{id}(id=${producto.id})} : @{/admin/productos/nuevo}"
+                  th:object="${producto}" method="post" novalidate>
+
+                <div class="row g-3">
+
+                    <!-- Nombre -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{nombre}" th:errorclass="is-invalid"
+                               class="form-control" placeholder="Ej: Pollo Entero">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}"
+                             th:errors="*{nombre}"></div>
+                    </div>
+
+                    <!-- Descripcion -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Descripción <span class="text-danger">*</span></label>
+                        <textarea th:field="*{descripcion}" th:errorclass="is-invalid"
+                                  class="form-control" rows="2"
+                                  placeholder="Breve descripción del producto"></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}"
+                             th:errors="*{descripcion}"></div>
+                    </div>
+
+                    <!-- Precio y Unidad -->
+                    <div class="col-md-5">
+                        <label class="form-label fw-semibold">Precio (S/) <span class="text-danger">*</span></label>
+                        <input type="number" th:field="*{precio}" class="form-control"
+                               placeholder="0.00" min="0.01" step="0.01" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Unidad <span class="text-danger">*</span></label>
+                        <select th:field="*{unidad}" th:errorclass="is-invalid" class="form-select">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="kg">kg</option>
+                            <option value="unidad">unidad</option>
+                            <option value="vaso">vaso</option>
+                            <option value="atado">atado</option>
+                            <option value="litro">litro</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('unidad')}"
+                             th:errors="*{unidad}"></div>
+                    </div>
+
+                    <!-- Categoria -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Categoría</label>
+                        <select name="categoriaId" class="form-select">
+                            <option value="">— Ninguna —</option>
+                            <option th:each="cat : ${categorias}"
+                                    th:value="${cat.id}" th:text="${cat.nombre}"
+                                    th:selected="${cat.id == categoriaSeleccionada}"></option>
+                        </select>
+                    </div>
+
+                    <!-- Proveedor + Stock -->
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold">Proveedor <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{proveedor}" th:errorclass="is-invalid"
+                               class="form-control" placeholder="Nombre del proveedor">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('proveedor')}"
+                             th:errors="*{proveedor}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Stock <span class="text-danger">*</span></label>
+                        <input type="number" th:field="*{stock}" th:errorclass="is-invalid"
+                               class="form-control" placeholder="0" min="0">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('stock')}"
+                             th:errors="*{stock}"></div>
+                    </div>
+
+                    <!-- Imagen URL -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">URL de Imagen</label>
+                        <input type="text" th:field="*{imagenUrl}" class="form-control"
+                               placeholder="/images/nombre-imagen.png">
+                        <div class="form-text">Ruta relativa desde /static/images/</div>
+                    </div>
+
+                    <!-- Disponible (solo edicion) -->
+                    <div th:if="${editando}" class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="disponible"
+                                   id="chkDisponible" th:checked="${producto.disponible}">
+                            <label class="form-check-label fw-semibold" for="chkDisponible">
+                                Producto disponible para la venta
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-check-circle me-1"></i>
+                        <span th:text="${editando} ? 'Guardar Cambios' : 'Crear Producto'"></span>
+                    </button>
+                    <a th:href="@{/admin/productos}" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-x-circle me-1"></i> Cancelar
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

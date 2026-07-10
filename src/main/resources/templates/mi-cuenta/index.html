@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Mi Cuenta')}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<!-- ======== HERO DE CUENTA ======== -->
+<section class="cuenta-hero">
+    <div class="container">
+        <div class="text-center">
+            <div class="cuenta-avatar">
+                <span th:text="${usuario.nombre.substring(0,1).toUpperCase()}">U</span>
+            </div>
+            <h4 class="fw-bold text-white mb-1" th:text="${usuario.nombre}">Nombre</h4>
+            <p class="text-white-50 mb-3" th:text="${usuario.email}">email</p>
+            <div class="row g-3 justify-content-center" style="max-width:500px; margin:0 auto">
+                <div class="col-6">
+                    <div class="cuenta-stat-card">
+                        <div class="cuenta-stat-num" th:text="${pedidos.size()}">0</div>
+                        <div class="cuenta-stat-lbl">Pedidos realizados</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="cuenta-stat-card">
+                        <div class="cuenta-stat-num"
+                             th:text="'S/ ' + ${#numbers.formatDecimal(totalGastado, 1, 2)}">S/ 0.00</div>
+                        <div class="cuenta-stat-lbl">Total gastado</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======== CONTENIDO PRINCIPAL ======== -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- ===== COLUMNA IZQUIERDA: PERFIL ===== -->
+            <div class="col-lg-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-person-circle me-2 text-success"></i>Informacion Personal
+                </h5>
+                <div class="info-perfil-card">
+                    <div class="info-perfil-item">
+                        <div class="info-perfil-icon"><i class="bi bi-person"></i></div>
+                        <div>
+                            <div style="font-size:0.75rem; color:var(--texto-claro); margin-bottom:2px">Nombre completo</div>
+                            <div class="fw-semibold" th:text="${usuario.nombre}">-</div>
+                        </div>
+                    </div>
+                    <div class="info-perfil-item">
+                        <div class="info-perfil-icon"><i class="bi bi-envelope"></i></div>
+                        <div>
+                            <div style="font-size:0.75rem; color:var(--texto-claro); margin-bottom:2px">Correo electronico</div>
+                            <div class="fw-semibold" th:text="${usuario.email}">-</div>
+                        </div>
+                    </div>
+                    <div class="info-perfil-item">
+                        <div class="info-perfil-icon"><i class="bi bi-card-text"></i></div>
+                        <div>
+                            <div style="font-size:0.75rem; color:var(--texto-claro); margin-bottom:2px">DNI</div>
+                            <div class="fw-semibold" th:text="${usuario.dni}">-</div>
+                        </div>
+                    </div>
+                    <div class="info-perfil-item" th:if="${usuario.telefono != null and !#strings.isEmpty(usuario.telefono)}">
+                        <div class="info-perfil-icon"><i class="bi bi-telephone"></i></div>
+                        <div>
+                            <div style="font-size:0.75rem; color:var(--texto-claro); margin-bottom:2px">Telefono</div>
+                            <div class="fw-semibold" th:text="${usuario.telefono}">-</div>
+                        </div>
+                    </div>
+                    <div class="info-perfil-item" th:if="${usuario.direccion != null and !#strings.isEmpty(usuario.direccion)}">
+                        <div class="info-perfil-icon"><i class="bi bi-geo-alt"></i></div>
+                        <div>
+                            <div style="font-size:0.75rem; color:var(--texto-claro); margin-bottom:2px">Direccion</div>
+                            <div class="fw-semibold" th:text="${usuario.direccion}">-</div>
+                        </div>
+                    </div>
+                    <div class="info-perfil-item">
+                        <div class="info-perfil-icon"><i class="bi bi-calendar3"></i></div>
+                        <div>
+                            <div style="font-size:0.75rem; color:var(--texto-claro); margin-bottom:2px">Miembro desde</div>
+                            <div class="fw-semibold"
+                                 th:text="${usuario.fechaRegistro != null ? #temporals.format(usuario.fechaRegistro, 'dd/MM/yyyy') : 'N/A'}">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones rapidas -->
+                <div class="mt-3 d-grid gap-2">
+                    <a th:href="@{/}" class="btn btn-primary-custom">
+                        <i class="bi bi-basket2 me-2"></i>Seguir Comprando
+                    </a>
+                    <a th:href="@{/logout}" class="btn btn-outline-secondary">
+                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesion
+                    </a>
+                </div>
+            </div>
+
+            <!-- ===== COLUMNA DERECHA: PEDIDOS ===== -->
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-bag-check me-2 text-success"></i>Mis Pedidos
+                    </h5>
+                    <span class="badge rounded-pill"
+                          style="background:var(--verde-claro); color:var(--verde-oscuro); font-size:0.82rem; padding:0.4rem 0.85rem"
+                          th:text="${pedidos.size()} + ' pedido(s)'">0 pedidos</span>
+                </div>
+
+                <!-- Sin pedidos -->
+                <div th:if="${pedidos.isEmpty()}" class="sin-pedidos">
+                    <i class="bi bi-bag-x display-4 mb-3" style="color:var(--borde)"></i>
+                    <h6 class="fw-bold text-muted mb-2">Aun no tienes pedidos</h6>
+                    <p class="text-muted mb-3" style="font-size:0.9rem">
+                        Explora nuestras categorias y realiza tu primera compra.
+                    </p>
+                    <a th:href="@{/}" class="btn btn-primary-custom">
+                        <i class="bi bi-basket2 me-2"></i>Empezar a comprar
+                    </a>
+                </div>
+
+                <!-- Lista de pedidos -->
+                <div th:if="${!pedidos.isEmpty()}" id="accordionPedidos">
+                    <div th:each="pedido, stat : ${pedidos}" class="pedido-card">
+
+                        <!-- Header del pedido (toggle) -->
+                        <button class="pedido-header-btn collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                th:attr="data-bs-target='#detallePedido' + ${pedido.id}"
+                                th:aria-controls="'detallePedido' + ${pedido.id}">
+                            <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 w-100">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <span class="pedido-num" th:text="${pedido.numeroPedido}">MY-0001</span>
+                                        <span class="badge-completado">Completado</span>
+                                    </div>
+                                    <div class="pedido-fecha mt-1">
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        <span th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2025</span>
+                                        &nbsp;&bull;&nbsp;
+                                        <span th:text="${pedido.items.size()} + ' producto(s)'">1 producto(s)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="pedido-total" th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total, 1, 2)}">S/ 0.00</span>
+                                    <i class="bi bi-chevron-down pedido-chevron"></i>
+                                </div>
+                            </div>
+                        </button>
+
+                        <!-- Detalle del pedido (colapsable) -->
+                        <div th:id="'detallePedido' + ${pedido.id}" class="collapse">
+
+                            <!-- Tabla de items -->
+                            <div class="table-responsive">
+                                <table class="table pedido-body-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-3">Producto</th>
+                                            <th class="text-center">Cant.</th>
+                                            <th class="text-end">P. Unit.</th>
+                                            <th class="text-end pe-3">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${pedido.items}">
+                                            <td class="ps-3 fw-semibold" th:text="${item.nombreProducto}">Producto</td>
+                                            <td class="text-center text-muted" th:text="${item.cantidad}">1</td>
+                                            <td class="text-end text-muted"
+                                                th:text="'S/ ' + ${#numbers.formatDecimal(item.precioUnitario, 1, 2)}">S/ 0.00</td>
+                                            <td class="text-end pe-3 fw-semibold"
+                                                th:text="'S/ ' + ${#numbers.formatDecimal(item.subtotal, 1, 2)}">S/ 0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Resumen del pedido -->
+                            <div class="pedido-resumen-mini">
+                                <div class="row g-2">
+                                    <div class="col-sm-6">
+                                        <div class="d-flex gap-1 flex-column" style="font-size:0.83rem">
+                                            <div>
+                                                <i class="bi bi-truck me-1 text-success"></i>
+                                                <span class="text-muted">Entrega:</span>
+                                                <strong th:text="${pedido.tipoEntrega == 'envio' ? 'Envio a domicilio' : 'Retiro en mercado'}">-</strong>
+                                            </div>
+                                            <div th:if="${pedido.distrito != null and !#strings.isEmpty(pedido.distrito)}">
+                                                <i class="bi bi-geo-alt me-1 text-success"></i>
+                                                <span class="text-muted">Distrito:</span>
+                                                <strong th:text="${pedido.distrito}">-</strong>
+                                            </div>
+                                            <div>
+                                                <i class="bi bi-credit-card me-1 text-success"></i>
+                                                <span class="text-muted">Pago:</span>
+                                                <strong th:text="${pedido.metodoPago}">-</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="d-flex flex-column gap-1" style="font-size:0.83rem">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted">Subtotal:</span>
+                                                <span th:text="'S/ ' + ${#numbers.formatDecimal(pedido.subtotal, 1, 2)}">-</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between text-success"
+                                                 th:if="${pedido.descuento > 0}">
+                                                <span>Descuento (YULI10):</span>
+                                                <span th:text="'- S/ ' + ${#numbers.formatDecimal(pedido.descuento, 1, 2)}">-</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted">Envio:</span>
+                                                <span class="text-success fw-semibold">Gratis</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between fw-bold border-top pt-1 mt-1">
+                                                <span>TOTAL:</span>
+                                                <span class="text-success"
+                                                      th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total, 1, 2)}">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/modals :: modals}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+
+</body>
+</html>
