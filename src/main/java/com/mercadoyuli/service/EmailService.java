@@ -36,7 +36,7 @@ public class EmailService {
                     enlace + "\n\n" +
                     "Si no solicitaste este cambio, ignora este correo.\n\n" +
                     "Mercado Yuli Online");
-            if (remitente != null && !remitente.startsWith("TU_")) {
+            if (remitente != null && !remitente.isBlank() && !remitente.startsWith("TU_")) {
                 msg.setFrom(remitente);
             }
             mailSender.send(msg);
