@@ -462,6 +462,14 @@
     });
 </script>
 
+<!-- Contrasena restablecida -->
+<script th:if="${mensajeRecuperacion}" th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('mensajeExito').textContent = /*[[${mensajeRecuperacion}]]*/ '';
+        new bootstrap.Modal(document.getElementById('exitoModal')).show();
+    });
+</script>
+
 <!-- Errores de validacion (Spring Validator): se muestran inline y se reabre el modal -->
 <script th:if="${erroresRegistro}">
     document.addEventListener('DOMContentLoaded', function () {

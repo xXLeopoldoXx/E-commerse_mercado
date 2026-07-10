@@ -2,10 +2,11 @@ package com.mercadoyuli.controller;
 
 import com.mercadoyuli.model.PedidoEntity;
 import com.mercadoyuli.model.Usuario;
+import com.mercadoyuli.security.JwtService;
 import com.mercadoyuli.service.PedidoService;
 import com.mercadoyuli.service.UsuarioService;
 import com.mercadoyuli.validator.UsuarioValidator;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -23,12 +24,14 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final UsuarioValidator usuarioValidator;
     private final PedidoService pedidoService;
+    private final JwtService jwtService;
 
     public UsuarioController(UsuarioService usuarioService, UsuarioValidator usuarioValidator,
-                             PedidoService pedidoService) {
+                             PedidoService pedidoService, JwtService jwtService) {
         this.usuarioService = usuarioService;
         this.usuarioValidator = usuarioValidator;
         this.pedidoService = pedidoService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/registro")
@@ -65,7 +68,7 @@ public class UsuarioController {
     @PostMapping("/login")
     public String login(@RequestParam String email,
                         @RequestParam String password,
-                        HttpSession session,
+                        HttpServletResponse response,
                         RedirectAttributes redirectAttributes) {
         // Validacion de credenciales en el servidor, con mensajes por campo
         Map<String, String> errores = new HashMap<>();
@@ -79,12 +82,13 @@ public class UsuarioController {
         if (errores.isEmpty()) {
             var usuario = usuarioService.login(email, password);
             if (usuario.isPresent()) {
-                // Si es administrador, iniciar sesion de admin y ir al panel
+                // Autenticacion con JWT: se emite el token en una cookie HttpOnly
+                String token = jwtService.generar(usuario.get().getEmail(), usuario.get().getRol());
+                jwtService.agregarCookie(response, token);
+
                 if ("ADMIN".equals(usuario.get().getRol())) {
-                    session.setAttribute("adminLogueado", usuario.get());
                     return "redirect:/admin/dashboard";
                 }
-                session.setAttribute("usuarioLogueado", usuario.get());
                 redirectAttributes.addFlashAttribute("mensajeLogin",
                         "Bienvenido, " + usuario.get().getNombre().split(" ")[0] + "!");
                 return "redirect:/";
@@ -98,8 +102,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/mi-cuenta")
-    public String miCuenta(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+    public String miCuenta(Model model) {
+        Usuario usuario = usuarioService.usuarioActual().orElse(null);
         if (usuario == null) {
             return "redirect:/";
         }
@@ -112,8 +116,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
+    public String logout(HttpServletResponse response) {
+        jwtService.limpiarCookie(response);
         return "redirect:/";
     }
 }

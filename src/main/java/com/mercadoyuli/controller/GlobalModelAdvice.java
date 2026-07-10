@@ -2,7 +2,7 @@ package com.mercadoyuli.controller;
 
 import com.mercadoyuli.service.CarritoService;
 import com.mercadoyuli.service.ProductoService;
-import jakarta.servlet.http.HttpSession;
+import com.mercadoyuli.service.UsuarioService;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,15 +12,19 @@ public class GlobalModelAdvice {
 
     private final CarritoService carritoService;
     private final ProductoService productoService;
+    private final UsuarioService usuarioService;
 
-    public GlobalModelAdvice(CarritoService carritoService, ProductoService productoService) {
+    public GlobalModelAdvice(CarritoService carritoService, ProductoService productoService,
+                             UsuarioService usuarioService) {
         this.carritoService = carritoService;
         this.productoService = productoService;
+        this.usuarioService = usuarioService;
     }
 
     @ModelAttribute
-    public void addCommonAttributes(HttpSession session, Model model) {
-        model.addAttribute("usuarioLogueado", session.getAttribute("usuarioLogueado"));
+    public void addCommonAttributes(Model model) {
+        // El usuario autenticado se obtiene del SecurityContext (JWT), no de la sesion
+        model.addAttribute("usuarioLogueado", usuarioService.usuarioActual().orElse(null));
         model.addAttribute("carritoCount", carritoService.obtenerCantidadTotal());
         model.addAttribute("categorias", productoService.obtenerCategorias());
     }

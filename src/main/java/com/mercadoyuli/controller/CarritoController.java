@@ -2,12 +2,11 @@ package com.mercadoyuli.controller;
 
 import com.mercadoyuli.model.Pedido;
 import com.mercadoyuli.model.PedidoEntity;
-import com.mercadoyuli.model.Usuario;
 import com.mercadoyuli.service.PedidoService;
 import com.mercadoyuli.model.Producto;
-import jakarta.servlet.http.HttpSession;
 import com.mercadoyuli.service.CarritoService;
 import com.mercadoyuli.service.ProductoService;
+import com.mercadoyuli.service.UsuarioService;
 import com.mercadoyuli.validator.PedidoValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,13 +29,16 @@ public class CarritoController {
     private final ProductoService productoService;
     private final PedidoService pedidoService;
     private final PedidoValidator pedidoValidator;
+    private final UsuarioService usuarioService;
 
     public CarritoController(CarritoService carritoService, ProductoService productoService,
-                             PedidoService pedidoService, PedidoValidator pedidoValidator) {
+                             PedidoService pedidoService, PedidoValidator pedidoValidator,
+                             UsuarioService usuarioService) {
         this.carritoService = carritoService;
         this.productoService = productoService;
         this.pedidoService = pedidoService;
         this.pedidoValidator = pedidoValidator;
+        this.usuarioService = usuarioService;
     }
 
     @PostMapping("/carrito/agregar")
@@ -109,7 +111,7 @@ public class CarritoController {
     }
 
     @GetMapping("/checkout")
-    public String checkout(Model model, HttpSession session) {
+    public String checkout(Model model) {
         if (carritoService.estaVacio()) {
             return "redirect:/carrito";
         }
@@ -121,16 +123,15 @@ public class CarritoController {
         model.addAttribute("carritoCount", carritoService.obtenerCantidadTotal());
         model.addAttribute("categorias", productoService.obtenerCategorias());
 
-        // Pre-cargar los datos del usuario logueado (si lo hay)
+        // Pre-cargar los datos del usuario autenticado (si lo hay)
         Pedido pedido = new Pedido();
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuario != null) {
+        usuarioService.usuarioActual().ifPresent(usuario -> {
             pedido.setNombreCliente(usuario.getNombre());
             pedido.setDni(usuario.getDni());
             pedido.setEmailCliente(usuario.getEmail());
             pedido.setTelefonoCliente(usuario.getTelefono());
             pedido.setDireccion(usuario.getDireccion());
-        }
+        });
         model.addAttribute("pedido", pedido);
         return "checkout/formulario";
     }

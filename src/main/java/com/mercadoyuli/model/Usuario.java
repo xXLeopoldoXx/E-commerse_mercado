@@ -29,6 +29,13 @@ public class Usuario {
     // "USUARIO" o "ADMIN"
     private String rol = "USUARIO";
 
+    // Recuperacion de contrasena
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expira")
+    private LocalDateTime resetTokenExpira;
+
     @Column(name = "fecha_registro")
     private LocalDateTime fechaRegistro;
 
@@ -61,6 +68,12 @@ public class Usuario {
 
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
+
+    public String getResetToken() { return resetToken; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+
+    public LocalDateTime getResetTokenExpira() { return resetTokenExpira; }
+    public void setResetTokenExpira(LocalDateTime resetTokenExpira) { this.resetTokenExpira = resetTokenExpira; }
 
     public LocalDateTime getFechaRegistro() { return fechaRegistro; }
     public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }

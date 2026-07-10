@@ -3,11 +3,12 @@ package com.mercadoyuli.controller;
 import com.mercadoyuli.model.Categoria;
 import com.mercadoyuli.model.PedidoEntity;
 import com.mercadoyuli.model.Producto;
+import com.mercadoyuli.security.JwtService;
 import com.mercadoyuli.service.PedidoService;
 import com.mercadoyuli.service.ProductoService;
 import com.mercadoyuli.service.UsuarioService;
 import com.mercadoyuli.validator.ProductoValidator;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,34 +27,41 @@ public class AdminController {
     private final PedidoService pedidoService;
     private final UsuarioService usuarioService;
     private final ProductoValidator productoValidator;
+    private final JwtService jwtService;
 
     public AdminController(ProductoService productoService,
                            PedidoService pedidoService,
                            UsuarioService usuarioService,
-                           ProductoValidator productoValidator) {
+                           ProductoValidator productoValidator,
+                           JwtService jwtService) {
         this.productoService = productoService;
         this.pedidoService = pedidoService;
         this.usuarioService = usuarioService;
         this.productoValidator = productoValidator;
+        this.jwtService = jwtService;
     }
 
     // ===================== LOGIN / LOGOUT =====================
 
     @GetMapping("/login")
-    public String loginForm(HttpSession session) {
-        if (session.getAttribute("adminLogueado") != null)
+    public String loginForm() {
+        // Si ya esta autenticado como admin, ir directo al panel
+        if (usuarioService.usuarioActual().map(u -> "ADMIN".equals(u.getRol())).orElse(false)) {
             return "redirect:/admin/dashboard";
+        }
         return "admin/login";
     }
 
     @PostMapping("/login")
     public String login(@RequestParam String email,
                         @RequestParam String password,
-                        HttpSession session,
+                        HttpServletResponse response,
                         RedirectAttributes ra) {
         var resultado = usuarioService.loginAdmin(email, password);
         if (resultado.isPresent()) {
-            session.setAttribute("adminLogueado", resultado.get());
+            // Autenticacion con JWT
+            String token = jwtService.generar(resultado.get().getEmail(), resultado.get().getRol());
+            jwtService.agregarCookie(response, token);
             return "redirect:/admin/dashboard";
         }
         ra.addFlashAttribute("error", "Credenciales incorrectas o acceso no autorizado.");
@@ -61,8 +69,8 @@ public class AdminController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.removeAttribute("adminLogueado");
+    public String logout(HttpServletResponse response) {
+        jwtService.limpiarCookie(response);
         return "redirect:/admin/login";
     }
 
