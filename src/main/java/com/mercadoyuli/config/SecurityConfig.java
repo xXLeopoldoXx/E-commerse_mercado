@@ -37,7 +37,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // La autenticacion es por JWT (sin estado), pero el carrito usa la
+            // sesion HTTP (@SessionScope). Por eso permitimos crear sesion cuando
+            // se necesite; NO usar STATELESS o el carrito se vaciaria de forma intermitente.
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
                 .requestMatchers("/admin/login").permitAll()
