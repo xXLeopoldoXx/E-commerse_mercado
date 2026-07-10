@@ -37,3 +37,7 @@ build/
 
 ### Secretos locales (NO subir) ###
 secrets.properties
+
+### Cookie jars de pruebas ###
+*.txt
+!requirements*.txt
