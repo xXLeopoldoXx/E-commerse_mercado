@@ -9,6 +9,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 
 /**
  * Configuracion de Spring Security con autenticacion y autorizacion
@@ -39,8 +40,13 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             // La autenticacion es por JWT (sin estado), pero el carrito usa la
             // sesion HTTP (@SessionScope). Por eso permitimos crear sesion cuando
-            // se necesite; NO usar STATELESS o el carrito se vaciaria de forma intermitente.
+            // se necesite (para el carrito)...
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+            // ...pero la AUTENTICACION NO se guarda en la sesion: se deriva del JWT
+            // en cada peticion. Asi el logout y la expiracion del token si cierran
+            // la sesion (de lo contrario la sesion mantendria vivo el login).
+            .securityContext(sc -> sc.securityContextRepository(
+                    new RequestAttributeSecurityContextRepository()))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
                 .requestMatchers("/admin/login").permitAll()
