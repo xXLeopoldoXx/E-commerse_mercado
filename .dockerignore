@@ -1,0 +1,8 @@
+target/
+.git/
+.idea/
+.vscode/
+*.iml
+secrets.properties
+*.txt
+!secrets.properties.example
