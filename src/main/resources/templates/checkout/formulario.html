@@ -37,7 +37,8 @@
             </div>
         </div>
 
-        <form th:action="@{/checkout/confirmar}" method="post" id="checkoutForm" novalidate>
+        <form th:action="@{/checkout/confirmar}" method="post" id="checkoutForm" novalidate
+              th:attr="data-total=${total}">
             <div class="row g-4">
                 <!-- Columna izquierda: formulario -->
                 <div class="col-lg-8">
@@ -247,12 +248,11 @@
                         <!-- Instrucciones Yape -->
                         <div id="camposYape" class="mt-4" style="display:none">
                             <div class="yape-info">
-                                <i class="bi bi-phone fs-2 me-3"></i>
+                                <i class="bi bi-qr-code-scan fs-2 me-3"></i>
                                 <div>
                                     <strong>Pagar con Yape</strong>
-                                    <p class="mb-0 text-muted">Al confirmar el pedido, recibirás las instrucciones
-                                        para realizar el Yape al numero del mercado. Tu pedido se procesara
-                                        al verificar el pago.</p>
+                                    <p class="mb-0 text-muted">Al confirmar el pedido se abrira un
+                                        <strong>codigo QR</strong> para completar el pago con tu app Yape.</p>
                                 </div>
                             </div>
                         </div>
@@ -314,9 +314,49 @@
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/modals :: modals}"></div>
 
+<!-- ======== MODAL PAGO YAPE (simulacion) ======== -->
+<div class="modal fade" id="modalYape" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content text-center border-0" style="border-radius:16px; overflow:hidden;">
+            <div style="background:#742284; color:#fff; padding:1rem;">
+                <div style="font-size:1.4rem; font-weight:700; letter-spacing:1px;">Yape</div>
+                <small style="opacity:.85">Pago seguro · simulacion de prueba</small>
+            </div>
+
+            <!-- Paso 1: QR -->
+            <div class="modal-body p-4" id="yapePaso1">
+                <p class="mb-2 fw-semibold">Escanea el codigo con tu app</p>
+                <div id="qrYape" class="d-flex justify-content-center mb-3"></div>
+                <div class="fs-4 fw-bold" style="color:#742284;" id="yapeMonto">S/ 0.00</div>
+                <small class="text-muted d-block mb-3">Mercado Yuli · Ref. <span id="yapeRef">—</span></small>
+                <button type="button" class="btn btn-success w-100" id="btnSimularYape">
+                    <i class="bi bi-check2-circle me-1"></i>Ya realice el pago
+                </button>
+                <button type="button" class="btn btn-link text-muted w-100 mt-1 p-1" data-bs-dismiss="modal"
+                        style="font-size:.85rem;">Cancelar</button>
+            </div>
+
+            <!-- Paso 2: verificando -->
+            <div class="modal-body p-5 d-none" id="yapePaso2">
+                <div class="spinner-border text-success mb-3" role="status"></div>
+                <p class="fw-semibold mb-0">Verificando pago...</p>
+            </div>
+
+            <!-- Paso 3: exito -->
+            <div class="modal-body p-5 d-none" id="yapePaso3">
+                <i class="bi bi-check-circle-fill text-success" style="font-size:3rem;"></i>
+                <p class="fw-bold mb-0 mt-2">Pago confirmado!</p>
+                <small class="text-muted">Procesando tu pedido...</small>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Leaflet (mapa gratuito con OpenStreetMap) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Generador de QR (gratuito, sin API) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/main.js}"></script>
@@ -353,6 +393,56 @@
     }
     // La validacion de los datos del pedido se realiza en el servidor
     // con Spring Validator; los errores se muestran junto a cada campo.
+
+    // ===== Simulacion de pago con Yape (QR) =====
+    (function pagoYape() {
+        const form = document.getElementById('checkoutForm');
+        if (!form) return;
+        const total = parseFloat(form.getAttribute('data-total') || '0');
+        let pagoConfirmado = false;
+
+        form.addEventListener('submit', function (e) {
+            const metodo = form.querySelector('input[name="metodoPago"]:checked');
+            if (metodo && metodo.value === 'yape' && !pagoConfirmado) {
+                e.preventDefault();
+                abrirModalYape();
+            }
+        });
+
+        function abrirModalYape() {
+            const ref = 'MY-' + String(Date.now()).slice(-6);
+            document.getElementById('yapeMonto').textContent = 'S/ ' + total.toFixed(2);
+            document.getElementById('yapeRef').textContent = ref;
+
+            const cont = document.getElementById('qrYape');
+            cont.innerHTML = '';
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(cont, {
+                    text: 'YAPE|MercadoYuli|Monto:S/' + total.toFixed(2) + '|Ref:' + ref,
+                    width: 190, height: 190,
+                    colorDark: '#742284', colorLight: '#ffffff'
+                });
+            }
+            document.getElementById('yapePaso1').classList.remove('d-none');
+            document.getElementById('yapePaso2').classList.add('d-none');
+            document.getElementById('yapePaso3').classList.add('d-none');
+            new bootstrap.Modal(document.getElementById('modalYape')).show();
+        }
+
+        const btn = document.getElementById('btnSimularYape');
+        if (btn) btn.addEventListener('click', function () {
+            document.getElementById('yapePaso1').classList.add('d-none');
+            document.getElementById('yapePaso2').classList.remove('d-none');   // verificando...
+            setTimeout(() => {
+                document.getElementById('yapePaso2').classList.add('d-none');
+                document.getElementById('yapePaso3').classList.remove('d-none'); // exito
+                setTimeout(() => {
+                    pagoConfirmado = true;
+                    form.submit();   // ahora si envia el pedido de verdad
+                }, 1200);
+            }, 1800);
+        });
+    })();
 
     // ===== Mapa interactivo (Leaflet + OpenStreetMap, gratuito) =====
     (function initMapa() {

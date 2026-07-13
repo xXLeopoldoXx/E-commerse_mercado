@@ -86,21 +86,8 @@
                     <div th:if="${totalPedidos == 0}" class="text-center text-muted py-3">
                         <i class="bi bi-inbox d-block fs-3 mb-2"></i>Sin pedidos aún
                     </div>
-                    <div th:unless="${totalPedidos == 0}">
-                        <div th:each="entry : ${porMetodoPago}" class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="text-capitalize fw-semibold"
-                                      th:text="${entry.key == 'tarjeta'} ? 'Tarjeta' :
-                                               (${entry.key == 'yape'} ? 'Yape' :
-                                               (${entry.key == 'pago_local'} ? 'Pago en Local' : entry.key))"></span>
-                                <span class="text-muted small"
-                                      th:text="${entry.value} + ' pedido(s)'"></span>
-                            </div>
-                            <div class="progress" style="height:8px;">
-                                <div class="progress-bar bg-success"
-                                     th:style="'width:' + ${(entry.value * 100 / totalPedidos)} + '%'"></div>
-                            </div>
-                        </div>
+                    <div th:unless="${totalPedidos == 0}" style="position:relative;height:260px;">
+                        <canvas id="chartPago"></canvas>
                     </div>
                 </div>
             </div>
@@ -116,21 +103,8 @@
                     <div th:if="${totalPedidos == 0}" class="text-center text-muted py-3">
                         <i class="bi bi-inbox d-block fs-3 mb-2"></i>Sin pedidos aún
                     </div>
-                    <div th:unless="${totalPedidos == 0}">
-                        <div th:each="entry : ${porTipoEntrega}" class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="fw-semibold"
-                                      th:text="${entry.key == 'envio'} ? 'Envío a domicilio' :
-                                               (${entry.key == 'retiro'} ? 'Retiro en mercado' : entry.key)"></span>
-                                <span class="text-muted small"
-                                      th:text="${entry.value} + ' pedido(s)'"></span>
-                            </div>
-                            <div class="progress" style="height:8px;">
-                                <div class="progress-bar"
-                                     style="background:#f5d020;"
-                                     th:style="'background:#f5d020;width:' + ${(entry.value * 100 / totalPedidos)} + '%'"></div>
-                            </div>
-                        </div>
+                    <div th:unless="${totalPedidos == 0}" style="position:relative;height:260px;">
+                        <canvas id="chartEntrega"></canvas>
                     </div>
                 </div>
             </div>
@@ -238,5 +212,39 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script th:inline="javascript">
+    // Datos que vienen del controlador (Map<String, Long>)
+    const pagoKeys    = /*[[${porMetodoPago.keySet()}]]*/ [];
+    const pagoVals    = /*[[${porMetodoPago.values()}]]*/ [];
+    const entregaKeys = /*[[${porTipoEntrega.keySet()}]]*/ [];
+    const entregaVals = /*[[${porTipoEntrega.values()}]]*/ [];
+
+    const nombresPago    = { tarjeta: 'Tarjeta', yape: 'Yape', pago_local: 'Pago en Local' };
+    const nombresEntrega = { envio: 'Envío a domicilio', retiro: 'Retiro en mercado' };
+    const colores = ['#1a5c2a', '#f5d020', '#1565c0', '#c62828', '#6a1b9a'];
+
+    function crearDona(id, keys, vals, nombres) {
+        const el = document.getElementById(id);
+        if (!el || typeof Chart === 'undefined' || !keys.length) return;
+        new Chart(el, {
+            type: 'doughnut',
+            data: {
+                labels: keys.map(k => nombres[k] || k),
+                datasets: [{ data: vals, backgroundColor: colores, borderColor: '#fff', borderWidth: 2 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        crearDona('chartPago', pagoKeys, pagoVals, nombresPago);
+        crearDona('chartEntrega', entregaKeys, entregaVals, nombresEntrega);
+    });
+</script>
 </body>
 </html>
