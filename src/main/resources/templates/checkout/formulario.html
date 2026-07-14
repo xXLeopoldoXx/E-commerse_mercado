@@ -306,14 +306,42 @@
                             <span>Envio</span>
                             <span class="text-success">Gratis</span>
                         </div>
-                        <div th:if="${descuento > 0}" class="resumen-line resumen-descuento">
-                            <span><i class="bi bi-tag-fill me-1"></i>Descuento YULI10</span>
-                            <span th:text="'- S/ ' + ${#numbers.formatDecimal(descuento, 1, 2)}">- S/ 0.00</span>
+
+                        <!-- Codigo de descuento (se aplica sin recargar) -->
+                        <div class="my-3">
+                            <div id="codigoInputWrap" th:style="${codigoAplicado != null} ? 'display:none' : ''">
+                                <label class="form-label fw-semibold mb-1" style="font-size:.82rem">
+                                    <i class="bi bi-tag me-1"></i>Codigo de descuento
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control text-uppercase" id="codigoInput"
+                                           placeholder="Ej: YULI10" maxlength="10" autocomplete="off">
+                                    <button type="button" class="btn btn-outline-success" id="btnAplicarCodigo">Aplicar</button>
+                                </div>
+                                <div id="codigoMsg" class="mt-1" style="font-size:.8rem"></div>
+                            </div>
+                            <div id="codigoAplicadoWrap" class="d-flex justify-content-between align-items-center"
+                                 th:style="${codigoAplicado != null} ? '' : 'display:none'">
+                                <span class="text-success" style="font-size:.85rem">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Codigo
+                                    <strong id="codigoAplicadoTxt" th:text="${codigoAplicado}">YULI10</strong> aplicado
+                                </span>
+                                <button type="button" class="btn btn-link p-0 text-danger" id="btnQuitarCodigo"
+                                        style="font-size:.8rem">Quitar</button>
+                            </div>
+                        </div>
+
+                        <div class="resumen-line resumen-descuento" id="descuentoLine"
+                             th:style="${descuento > 0} ? '' : 'display:none'">
+                            <span><i class="bi bi-tag-fill me-1"></i>Descuento</span>
+                            <span id="descuentoValor"
+                                  th:text="'- S/ ' + ${#numbers.formatDecimal(descuento, 1, 2)}">- S/ 0.00</span>
                         </div>
                         <div class="resumen-divider"></div>
                         <div class="resumen-total">
                             <span>Total a Pagar</span>
-                            <span th:text="'S/ ' + ${#numbers.formatDecimal(total, 1, 2)}">S/ 0.00</span>
+                            <span id="totalValor"
+                                  th:text="'S/ ' + ${#numbers.formatDecimal(total, 1, 2)}">S/ 0.00</span>
                         </div>
                         <button type="submit" class="btn btn-checkout w-100 mt-4">
                             <i class="bi bi-check-circle me-2"></i>Confirmar Pedido
@@ -420,6 +448,64 @@
             this.value = val.length >= 3 ? val.substring(0, 2) + '/' + val.substring(2) : val;
         });
     }
+
+    // ===== Codigo de descuento (AJAX, sin recargar el checkout) =====
+    (function codigoDescuento() {
+        const btnAplicar = document.getElementById('btnAplicarCodigo');
+        const btnQuitar  = document.getElementById('btnQuitarCodigo');
+        const input      = document.getElementById('codigoInput');
+        const msg        = document.getElementById('codigoMsg');
+        const inputWrap  = document.getElementById('codigoInputWrap');
+        const aplWrap    = document.getElementById('codigoAplicadoWrap');
+        const aplTxt     = document.getElementById('codigoAplicadoTxt');
+        const descLine   = document.getElementById('descuentoLine');
+        const descValor  = document.getElementById('descuentoValor');
+        const totalValor = document.getElementById('totalValor');
+        if (!btnAplicar) return;
+
+        function actualizar(d) {
+            if (d.descuento > 0) {
+                descLine.style.display = '';
+                descValor.textContent = '- S/ ' + Number(d.descuento).toFixed(2);
+            } else {
+                descLine.style.display = 'none';
+            }
+            totalValor.textContent = 'S/ ' + Number(d.total).toFixed(2);
+            if (d.codigoAplicado) {
+                inputWrap.style.display = 'none';
+                aplWrap.style.display = 'flex';
+                aplTxt.textContent = d.codigoAplicado;
+            } else {
+                inputWrap.style.display = '';
+                aplWrap.style.display = 'none';
+            }
+        }
+
+        btnAplicar.addEventListener('click', function () {
+            const codigo = (input.value || '').trim();
+            if (!codigo) { msg.innerHTML = '<span class="text-danger">Ingresa un codigo.</span>'; return; }
+            fetch('/carrito/api/codigo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'codigo=' + encodeURIComponent(codigo)
+            }).then(r => r.json()).then(d => {
+                if (d.resultado === 'OK') msg.innerHTML = '<span class="text-success">Codigo aplicado! 10% de descuento.</span>';
+                else if (d.resultado === 'YA_USADO') msg.innerHTML = '<span class="text-danger">Este codigo ya fue usado.</span>';
+                else msg.innerHTML = '<span class="text-danger">Codigo invalido.</span>';
+                actualizar(d);
+            });
+        });
+
+        if (btnQuitar) btnQuitar.addEventListener('click', function () {
+            fetch('/carrito/api/quitar-codigo', { method: 'POST' })
+                .then(r => r.json()).then(d => { msg.innerHTML = ''; input.value = ''; actualizar(d); });
+        });
+
+        // Enter aplica el codigo sin enviar el formulario del checkout
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); btnAplicar.click(); }
+        });
+    })();
     // La validacion de los datos del pedido se realiza en el servidor
     // con Spring Validator; los errores se muestran junto a cada campo.
 

@@ -104,6 +104,29 @@ public class CarritoController {
         return apiItems();
     }
 
+    @PostMapping("/carrito/api/codigo")
+    @ResponseBody
+    public Map<String, Object> apiAplicarCodigo(@RequestParam String codigo) {
+        return resumenCodigo(carritoService.aplicarCodigo(codigo));
+    }
+
+    @PostMapping("/carrito/api/quitar-codigo")
+    @ResponseBody
+    public Map<String, Object> apiQuitarCodigo() {
+        carritoService.quitarCodigo();
+        return resumenCodigo("QUITADO");
+    }
+
+    private Map<String, Object> resumenCodigo(String resultado) {
+        Map<String, Object> r = new HashMap<>();
+        r.put("resultado", resultado);
+        r.put("codigoAplicado", carritoService.getCodigoAplicado());
+        r.put("subtotal", carritoService.obtenerSubtotal());
+        r.put("descuento", carritoService.obtenerDescuento());
+        r.put("total", carritoService.obtenerTotal());
+        return r;
+    }
+
     @GetMapping("/carrito")
     public String verCarrito(Model model) {
         model.addAttribute("items", carritoService.obtenerItems());

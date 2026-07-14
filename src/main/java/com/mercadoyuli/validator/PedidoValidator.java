@@ -7,6 +7,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import java.time.YearMonth;
+
 /**
  * Validacion del checkout (datos del pedido) usando el Spring Validator
  * (org.springframework.validation.Validator).
@@ -74,12 +76,20 @@ public class PedidoValidator implements Validator {
                 errors.rejectValue("cvv", "cvv.formato", "El CVV debe tener 3 digitos.");
             }
 
-            // Vencimiento: formato MM/AA
+            // Vencimiento: formato MM/AA y que la tarjeta no este vencida
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "vencimiento", "vencimiento.vacio",
                     "Ingresa el vencimiento.");
-            if (StringUtils.hasText(p.getVencimiento())
-                    && !p.getVencimiento().matches("(0[1-9]|1[0-2])/\\d{2}")) {
-                errors.rejectValue("vencimiento", "vencimiento.formato", "Formato valido: MM/AA.");
+            if (StringUtils.hasText(p.getVencimiento())) {
+                if (!p.getVencimiento().matches("(0[1-9]|1[0-2])/\\d{2}")) {
+                    errors.rejectValue("vencimiento", "vencimiento.formato", "Formato valido: MM/AA.");
+                } else {
+                    int mes = Integer.parseInt(p.getVencimiento().substring(0, 2));
+                    int anio = 2000 + Integer.parseInt(p.getVencimiento().substring(3, 5));
+                    YearMonth exp = YearMonth.of(anio, mes);
+                    if (exp.isBefore(YearMonth.now())) {
+                        errors.rejectValue("vencimiento", "vencimiento.vencida", "La tarjeta esta vencida.");
+                    }
+                }
             }
 
             // Titular: obligatorio
