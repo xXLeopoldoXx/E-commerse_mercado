@@ -2225,4 +2225,5 @@ body {
 @keyframes cartShake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
 .btn-cart-nav.cart-shake i, .btn-cart-mobile.cart-shake i { display: inline-block; animation: cartShake .4s ease; }
 
-#offcanvasCarrito { width: 380px; max-width: 90vw; }
+#offcanvasCarrito { width: 380px; max-width: 90vw; z-index: 1060; }
+.offcanvas-backdrop { z-index: 1055; }
