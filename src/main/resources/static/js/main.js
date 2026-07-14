@@ -64,12 +64,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
     // SMOOTH SCROLL PARA ANCLAS
+    // (si el ancla esta dentro de un modal, se cierra el modal ANTES de
+    //  hacer scroll; de lo contrario el scroll queda bloqueado y "no pasa nada")
     // ==========================================
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        const href = anchor.getAttribute('href');
+        if (href === '#' || href.length < 2) return;
         anchor.addEventListener('click', function (e) {
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                e.preventDefault();
+            const target = document.querySelector(href);
+            if (!target) return;
+            e.preventDefault();
+            const modalEl = this.closest('.modal');
+            const modal = modalEl ? bootstrap.Modal.getInstance(modalEl) : null;
+            if (modal) {
+                modalEl.addEventListener('hidden.bs.modal',
+                    () => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), { once: true });
+                modal.hide();
+            } else {
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
@@ -228,6 +239,108 @@ document.addEventListener('DOMContentLoaded', function () {
                     card.style.display = 'none';
                 }
             });
+        });
+    });
+});
+
+// ==========================================
+// CARRITO FLOTANTE (AJAX, sin recargar) + sonido + animacion
+// ==========================================
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Sonido corto al agregar (Web Audio, sin archivo externo)
+    function sonidoCarrito() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = ctx.createOscillator(), g = ctx.createGain();
+            o.connect(g); g.connect(ctx.destination);
+            o.type = 'sine';
+            o.frequency.setValueAtTime(660, ctx.currentTime);
+            o.frequency.exponentialRampToValueAtTime(990, ctx.currentTime + 0.12);
+            g.gain.setValueAtTime(0.0001, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.03);
+            g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
+            o.start(); o.stop(ctx.currentTime + 0.3);
+        } catch (e) { /* navegador sin audio: se ignora */ }
+    }
+
+    // Actualiza el contador del carrito con animacion
+    function actualizarBadge(count) {
+        document.querySelectorAll('.badge-cart').forEach(b => {
+            b.textContent = count;
+            b.style.display = count > 0 ? '' : 'none';
+            b.classList.remove('cart-bump'); void b.offsetWidth; b.classList.add('cart-bump');
+        });
+        document.querySelectorAll('.btn-cart-nav, .btn-cart-mobile').forEach(i => {
+            i.classList.remove('cart-shake'); void i.offsetWidth; i.classList.add('cart-shake');
+        });
+    }
+
+    // Dibuja el contenido del offcanvas
+    function renderCarrito(data) {
+        const cont = document.getElementById('cartItems');
+        const footer = document.getElementById('cartFooter');
+        if (!cont) return;
+        const items = data.items || [];
+        if (!items.length) {
+            cont.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-cart-x d-block" style="font-size:2.5rem"></i><p class="mt-2 mb-0">Tu carrito esta vacio</p></div>';
+            if (footer) footer.style.display = 'none';
+            return;
+        }
+        let html = '';
+        items.forEach(it => {
+            html +=
+                '<div class="d-flex align-items-center gap-2 py-2 border-bottom">' +
+                '<img src="' + it.imagenUrl + '" onerror="this.src=\'/images/placeholder.svg\'" style="width:52px;height:52px;object-fit:cover;border-radius:8px">' +
+                '<div class="flex-grow-1"><div class="fw-semibold small">' + it.nombre + '</div>' +
+                '<div class="text-muted" style="font-size:.8rem">' + it.cantidad + ' x S/ ' + Number(it.precioUnitario).toFixed(2) + '</div></div>' +
+                '<div class="text-end"><div class="fw-bold small">S/ ' + Number(it.subtotal).toFixed(2) + '</div>' +
+                '<button class="btn btn-link text-danger p-0 btn-quitar-item" data-id="' + it.productoId + '" style="font-size:.75rem">Quitar</button></div>' +
+                '</div>';
+        });
+        cont.innerHTML = html;
+        const totalEl = document.getElementById('cartTotal');
+        if (totalEl) totalEl.textContent = 'S/ ' + Number(data.total).toFixed(2);
+        if (footer) footer.style.display = 'block';
+
+        cont.querySelectorAll('.btn-quitar-item').forEach(btn => {
+            btn.addEventListener('click', function () {
+                fetch('/carrito/api/eliminar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'productoId=' + this.dataset.id
+                }).then(r => r.json()).then(d => { renderCarrito(d); actualizarBadge(d.count); });
+            });
+        });
+    }
+
+    function cargarCarrito() { return fetch('/carrito/api/items').then(r => r.json()); }
+
+    const offcanvas = document.getElementById('offcanvasCarrito');
+    if (offcanvas) {
+        offcanvas.addEventListener('show.bs.offcanvas', () => cargarCarrito().then(renderCarrito));
+    }
+
+    // Intercepta los formularios de "agregar al carrito" para no recargar
+    document.querySelectorAll('form[action*="carrito/agregar"]').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const pid = form.querySelector('[name="productoId"]');
+            if (!pid) { form.submit(); return; }
+            const cantEl = form.querySelector('[name="cantidad"]');
+            const cantidad = cantEl ? cantEl.value : 1;
+            fetch('/carrito/api/agregar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'productoId=' + pid.value + '&cantidad=' + cantidad
+            }).then(r => r.json()).then(d => {
+                actualizarBadge(d.count);
+                sonidoCarrito();
+                cargarCarrito().then(data => {
+                    renderCarrito(data);
+                    if (offcanvas) bootstrap.Offcanvas.getOrCreateInstance(offcanvas).show();
+                });
+            }).catch(() => form.submit());   // si el AJAX falla, envio normal
         });
     });
 });

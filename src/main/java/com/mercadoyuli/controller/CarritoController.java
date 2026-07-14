@@ -68,6 +68,42 @@ public class CarritoController {
         return "redirect:" + returnUrl;
     }
 
+    // ===================== API JSON (carrito flotante, sin recargar) =====================
+
+    @PostMapping("/carrito/api/agregar")
+    @ResponseBody
+    public Map<String, Object> apiAgregar(@RequestParam Long productoId,
+                                          @RequestParam(defaultValue = "1") int cantidad) {
+        Producto producto = productoService.obtenerProductoPorId(productoId);
+        String nombre = "";
+        if (producto != null) {
+            carritoService.agregarProducto(producto, cantidad);
+            nombre = producto.getNombre();
+        }
+        Map<String, Object> r = new HashMap<>();
+        r.put("count", carritoService.obtenerCantidadTotal());
+        r.put("nombre", nombre);
+        return r;
+    }
+
+    @GetMapping("/carrito/api/items")
+    @ResponseBody
+    public Map<String, Object> apiItems() {
+        Map<String, Object> r = new HashMap<>();
+        r.put("items", carritoService.obtenerItems());
+        r.put("subtotal", carritoService.obtenerSubtotal());
+        r.put("total", carritoService.obtenerTotal());
+        r.put("count", carritoService.obtenerCantidadTotal());
+        return r;
+    }
+
+    @PostMapping("/carrito/api/eliminar")
+    @ResponseBody
+    public Map<String, Object> apiEliminar(@RequestParam Long productoId) {
+        carritoService.eliminarProducto(productoId);
+        return apiItems();
+    }
+
     @GetMapping("/carrito")
     public String verCarrito(Model model) {
         model.addAttribute("items", carritoService.obtenerItems());
