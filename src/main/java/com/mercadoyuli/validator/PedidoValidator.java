@@ -56,5 +56,35 @@ public class PedidoValidator implements Validator {
         if ("envio".equals(p.getTipoEntrega()) && !StringUtils.hasText(p.getDireccion())) {
             errors.rejectValue("direccion", "direccion.requerida", "Ingresa tu direccion de envio.");
         }
+
+        // Datos de tarjeta: obligatorios solo cuando el metodo de pago es "tarjeta"
+        if ("tarjeta".equals(p.getMetodoPago())) {
+            // Numero de tarjeta: 16 digitos
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "numeroTarjeta", "tarjeta.vacio",
+                    "Ingresa el numero de tarjeta.");
+            if (StringUtils.hasText(p.getNumeroTarjeta())
+                    && !p.getNumeroTarjeta().replaceAll("\\s", "").matches("\\d{16}")) {
+                errors.rejectValue("numeroTarjeta", "tarjeta.formato", "La tarjeta debe tener 16 digitos.");
+            }
+
+            // CVV: 3 digitos
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "cvv", "cvv.vacio",
+                    "Ingresa el CVV.");
+            if (StringUtils.hasText(p.getCvv()) && !p.getCvv().matches("\\d{3}")) {
+                errors.rejectValue("cvv", "cvv.formato", "El CVV debe tener 3 digitos.");
+            }
+
+            // Vencimiento: formato MM/AA
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "vencimiento", "vencimiento.vacio",
+                    "Ingresa el vencimiento.");
+            if (StringUtils.hasText(p.getVencimiento())
+                    && !p.getVencimiento().matches("(0[1-9]|1[0-2])/\\d{2}")) {
+                errors.rejectValue("vencimiento", "vencimiento.formato", "Formato valido: MM/AA.");
+            }
+
+            // Titular: obligatorio
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "titular", "titular.vacio",
+                    "Ingresa el nombre del titular.");
+        }
     }
 }

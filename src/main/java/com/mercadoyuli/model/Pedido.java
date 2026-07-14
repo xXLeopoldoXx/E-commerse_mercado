@@ -22,6 +22,9 @@ public class Pedido {
     // Pago
     private String metodoPago;   // "tarjeta", "yape", "pago_local"
     private String numeroTarjeta;
+    private String cvv;
+    private String vencimiento;  // formato MM/AA
+    private String titular;
 
     private List<CarritoItem> items;
     private double total;
@@ -70,6 +73,15 @@ public class Pedido {
 
     public String getNumeroTarjeta() { return numeroTarjeta; }
     public void setNumeroTarjeta(String numeroTarjeta) { this.numeroTarjeta = numeroTarjeta; }
+
+    public String getCvv() { return cvv; }
+    public void setCvv(String cvv) { this.cvv = cvv; }
+
+    public String getVencimiento() { return vencimiento; }
+    public void setVencimiento(String vencimiento) { this.vencimiento = vencimiento; }
+
+    public String getTitular() { return titular; }
+    public void setTitular(String titular) { this.titular = titular; }
 
     public List<CarritoItem> getItems() { return items; }
     public void setItems(List<CarritoItem> items) { this.items = items; }

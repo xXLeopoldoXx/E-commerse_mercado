@@ -55,6 +55,7 @@
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
                                     <input type="text" class="form-control my-input" id="chkNombre" name="nombreCliente"
                                            placeholder="Ej: Maria Garcia" required
+                                           th:readonly="${usuarioLogueado != null}"
                                            th:value="${pedido?.nombreCliente}"
                                            th:classappend="${errores?.containsKey('nombre')} ? 'is-invalid' : ''">
                                 </div>
@@ -67,6 +68,7 @@
                                     <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                                     <input type="text" class="form-control my-input" id="chkDni" name="dni"
                                            placeholder="12345678" maxlength="8" pattern="[0-9]{8}" required
+                                           th:readonly="${usuarioLogueado != null}"
                                            th:value="${pedido?.dni}"
                                            th:classappend="${errores?.containsKey('dni')} ? 'is-invalid' : ''">
                                 </div>
@@ -79,6 +81,7 @@
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                                     <input type="email" class="form-control my-input" id="chkEmail" name="emailCliente"
                                            placeholder="tu@correo.com" required
+                                           th:readonly="${usuarioLogueado != null}"
                                            th:value="${pedido?.emailCliente}"
                                            th:classappend="${errores?.containsKey('email')} ? 'is-invalid' : ''">
                                 </div>
@@ -91,6 +94,7 @@
                                     <span class="input-group-text"><i class="bi bi-telephone"></i></span>
                                     <input type="tel" class="form-control my-input" id="chkTelefono" name="telefonoCliente"
                                            placeholder="987 654 321" maxlength="9" required
+                                           th:readonly="${usuarioLogueado != null}"
                                            th:value="${pedido?.telefonoCliente}"
                                            th:classappend="${errores?.containsKey('telefono')} ? 'is-invalid' : ''">
                                 </div>
@@ -220,27 +224,43 @@
                         <div id="camposTarjeta" class="mt-4">
                             <div class="row g-3">
                                 <div class="col-md-8">
-                                    <label class="form-label fw-semibold">Numero de Tarjeta</label>
+                                    <label class="form-label fw-semibold">Numero de Tarjeta <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
-                                        <input type="text" class="form-control my-input" name="numeroTarjeta"
-                                               placeholder="0000 0000 0000 0000" maxlength="19" id="inputTarjeta">
+                                        <input type="text" class="form-control my-input" name="numeroTarjeta" id="inputTarjeta"
+                                               placeholder="0000 0000 0000 0000" maxlength="19"
+                                               th:value="${pedido?.numeroTarjeta}"
+                                               th:classappend="${errores?.containsKey('numeroTarjeta')} ? 'is-invalid' : ''">
                                     </div>
+                                    <div class="invalid-feedback d-block" style="font-size:0.82rem"
+                                         th:text="${errores?.get('numeroTarjeta')}"></div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-semibold">CVV</label>
-                                    <input type="text" class="form-control my-input"
-                                           placeholder="123" maxlength="3">
+                                    <label class="form-label fw-semibold">CVV <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control my-input" name="cvv"
+                                           placeholder="123" maxlength="3"
+                                           th:value="${pedido?.cvv}"
+                                           th:classappend="${errores?.containsKey('cvv')} ? 'is-invalid' : ''">
+                                    <div class="invalid-feedback d-block" style="font-size:0.82rem"
+                                         th:text="${errores?.get('cvv')}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Vencimiento</label>
-                                    <input type="text" class="form-control my-input"
-                                           placeholder="MM/AA" maxlength="5">
+                                    <label class="form-label fw-semibold">Vencimiento <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control my-input" name="vencimiento" id="inputVencimiento"
+                                           placeholder="MM/AA" maxlength="5"
+                                           th:value="${pedido?.vencimiento}"
+                                           th:classappend="${errores?.containsKey('vencimiento')} ? 'is-invalid' : ''">
+                                    <div class="invalid-feedback d-block" style="font-size:0.82rem"
+                                         th:text="${errores?.get('vencimiento')}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Titular</label>
-                                    <input type="text" class="form-control my-input"
-                                           placeholder="Nombre en la tarjeta">
+                                    <label class="form-label fw-semibold">Titular <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control my-input" name="titular"
+                                           placeholder="Nombre en la tarjeta"
+                                           th:value="${pedido?.titular}"
+                                           th:classappend="${errores?.containsKey('titular')} ? 'is-invalid' : ''">
+                                    <div class="invalid-feedback d-block" style="font-size:0.82rem"
+                                         th:text="${errores?.get('titular')}"></div>
                                 </div>
                             </div>
                         </div>
@@ -389,6 +409,15 @@
             let val = this.value.replace(/\D/g, '').substring(0, 16);
             let formatted = val.replace(/(\d{4})(?=\d)/g, '$1 ');
             this.value = formatted;
+        });
+    }
+
+    // Formato vencimiento MM/AA (inserta la barra automaticamente)
+    const inputVenc = document.getElementById('inputVencimiento');
+    if (inputVenc) {
+        inputVenc.addEventListener('input', function() {
+            let val = this.value.replace(/\D/g, '').substring(0, 4);
+            this.value = val.length >= 3 ? val.substring(0, 2) + '/' + val.substring(2) : val;
         });
     }
     // La validacion de los datos del pedido se realiza en el servidor

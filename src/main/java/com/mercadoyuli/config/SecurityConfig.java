@@ -51,13 +51,22 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
                 .requestMatchers("/admin/login").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/mi-cuenta").authenticated()
+                // Para comprar hay que estar autenticado (checkout y confirmacion del pedido)
+                .requestMatchers("/checkout/**", "/mi-cuenta").authenticated()
                 .anyRequest().permitAll()
             )
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((request, response, e) ->
-                        response.sendRedirect(request.getRequestURI().startsWith("/admin")
-                                ? "/admin/login" : "/"))
+                .authenticationEntryPoint((request, response, e) -> {
+                    String uri = request.getRequestURI();
+                    if (uri.startsWith("/admin")) {
+                        response.sendRedirect("/admin/login");
+                    } else if (uri.startsWith("/checkout")) {
+                        // Debe iniciar sesion para comprar: volver al carrito con aviso
+                        response.sendRedirect("/carrito?login=1");
+                    } else {
+                        response.sendRedirect("/");
+                    }
+                })
                 .accessDeniedHandler((request, response, e) ->
                         response.sendRedirect(request.getRequestURI().startsWith("/admin")
                                 ? "/admin/login" : "/"))
